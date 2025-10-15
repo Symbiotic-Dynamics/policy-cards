@@ -1,0 +1,15 @@
+# General
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# Node/Python caches (if tooling arrives later)
+node_modules/
+dist/
+__pycache__/
+*.py[cod]
+
+# Editor/IDE
+.vscode/
+.idea/

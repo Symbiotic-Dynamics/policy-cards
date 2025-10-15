@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+title: Policy Cards — Specification and Artifacts
+message: If you use this work, please cite the paper for the concept and the Zenodo record for the artifacts.
+authors:
+  - family-names: Mavračic
+    given-names: Juraj
+    affiliation: Symbiotic Dynamics Ltd
+repository-code: https://github.com/symbiotic-dynamics/policy-cards
+license: Apache-2.0
+type: dataset
+keywords: [AI governance, policy cards, AI assurance, JSON Schema]
+preferred-citation:
+  type: article
+  title: Policy Cards: Deployment-Layer Governance for AI Agents
+  authors:
+    - family-names: Mavračic
+      given-names: Juraj
+  journal: arXiv
+  year: 2025
+  notes: Preprint
+  identifiers:
+    - type: url
+      value: https://arxiv.org/abs/TBA
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.TBA  # concept DOI once minted
