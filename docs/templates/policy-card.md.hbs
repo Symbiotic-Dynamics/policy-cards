@@ -1,0 +1,86 @@
+# {{meta.name}} — Policy Card (v{{meta.version}})
+
+**Owner:** {{meta.owner}}  
+**Created:** {{meta.created_at}}  
+**Valid:** {{meta.valid_from}}{{#if meta.valid_to}} — {{meta.valid_to}}{{else}} — open-ended{{/if}}
+
+## 1) Scope
+- **Application:** {{scope.application}}
+- **Stakeholders:** {{#if scope.stakeholders}}{{#each scope.stakeholders}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}{{else}}—{{/if}}
+- **Jurisdictions:** {{#if scope.jurisdictions}}{{#each scope.jurisdictions}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}{{else}}—{{/if}}
+- **System refs:** {{#if scope.system_refs}}{{#each scope.system_refs}}[link]({{this}}){{#unless @last}}, {{/unless}}{{/each}}{{else}}—{{/if}}
+- **Model/Data refs:** {{#if scope.model_refs}}{{#each scope.model_refs}}[link]({{this}}){{#unless @last}}, {{/unless}}{{/each}}{{else}}—{{/if}}
+
+## 2) Applicable Policies
+{{#if applicable_policies}}
+{{#each applicable_policies}}
+- **{{name}}** ({{jurisdiction}}){{#if citation}} — {{citation}}{{/if}} {{#if uri}}[link]({{uri}}){{/if}}
+{{/each}}
+{{else}}
+- —
+{{/if}}
+
+## 3) Controls (Action Rules)
+> ABAC tuple ⟨subject, action, resource, condition, effect⟩; effect ∈ {allow, deny, require_escalation}
+
+{{#each controls.action_rules}}
+- **{{id}}** — *{{effect}}*  
+  - Subject: `{{subject}}`  
+  - Action: `{{action}}`, Resource: `{{resource}}`  
+  - Condition: `{{condition}}`  
+  - Evidence required: {{#if evidence_required}}{{#each evidence_required}}`{{this}}`{{#unless @last}}, {{/unless}}{{/each}}{{else}}None{{/if}}  
+  - Exceptions: {{#if exceptions}}{{#each exceptions}}`{{id}}` ({{time_bound}}) by {{approved_by}}{{#unless @last}}; {{/unless}}{{/each}}{{else}}None{{/if}}
+{{/each}}
+
+## 4) Obligations
+{{#if obligations}}
+{{#each obligations}}
+- **{{id}}** — {{description}}  
+  - When: {{when}} • Responsible: {{responsible_role}}  
+  - Evidence: {{#if evidence_required}}{{#each evidence_required}}`{{this}}`{{#unless @last}}, {{/unless}}{{/each}}{{else}}None{{/if}}{{#if legal_basis}} • Legal basis: {{legal_basis}}{{/if}}
+{{/each}}
+{{else}}
+- —
+{{/if}}
+
+## 5) Monitoring
+- **Logging**
+  - Events: {{#if monitoring.logging.events}}{{#each monitoring.logging.events}}`{{this}}`{{#unless @last}}, {{/unless}}{{/each}}{{else}}—{{/if}}
+  - Fields: {{#if monitoring.logging.fields}}{{#each monitoring.logging.fields}}`{{this}}`{{#unless @last}}, {{/unless}}{{/each}}{{else}}—{{/if}}
+  - Retention (days): {{monitoring.logging.retention_days}}
+- **Detectors**
+{{#if monitoring.detectors}}
+{{#each monitoring.detectors}}
+  - {{name}}: {{description}} ({{operator}} {{threshold}}) — {{#if uri}}[spec]({{uri}}){{/if}}
+{{/each}}
+{{else}}
+  - —
+{{/if}}
+- **Review**
+  - Owner: {{monitoring.review.owner}} • Cadence (days): {{monitoring.review.cadence_days}} • Method: {{monitoring.review.method}}
+
+## 6) KPIs & Thresholds
+- **KPIs**
+{{#if kpis_thresholds.kpis}}
+{{#each kpis_thresholds.kpis}}
+  - {{id}} — {{metric}} target {{target}} over {{window}}
+{{/each}}
+{{else}}
+  - —
+{{/if}}
+- **Critical auto-fail:** {{#if kpis_thresholds.critical_auto_fail}}{{#each kpis_thresholds.critical_auto_fail}}`{{this}}`{{#unless @last}}, {{/unless}}{{/each}}{{else}}—{{/if}}
+
+## 7) Change Management
+- **Approvals:** {{#if change_management.approvals}}{{#each change_management.approvals}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}{{else}}—{{/if}}
+- **Diff notes:** {{#if change_management.diff_notes}}{{change_management.diff_notes}}{{else}}—{{/if}}
+- **Rollback conditions:** {{#if change_management.rollback_conditions}}{{change_management.rollback_conditions}}{{else}}—{{/if}}
+- **Backout plan:** {{#if change_management.backout_plan}}{{change_management.backout_plan}}{{else}}—{{/if}}
+
+## 8) Assurance Mapping
+- **NIST AI RMF:** {{#if assurance_mapping.nist}}{{#each assurance_mapping.nist}}`{{this}}`{{#unless @last}}, {{/unless}}{{/each}}{{else}}—{{/if}}
+- **ISO/IEC 42001:** {{#if assurance_mapping.iso_42001}}{{#each assurance_mapping.iso_42001}}`{{this}}`{{#unless @last}}, {{/unless}}{{/each}}{{else}}—{{/if}}
+- **EU AI Act:** {{#if assurance_mapping.eu_ai_act}}{{#each assurance_mapping.eu_ai_act}}`{{this}}`{{#unless @last}}, {{/unless}}{{/each}}{{else}}—{{/if}}
+
+## 9) References
+- Docs: {{#if references.documentation}}{{#each references.documentation}}[link]({{this}}){{#unless @last}}, {{/unless}}{{/each}}{{else}}—{{/if}}
+- Notes: {{#if references.notes}}{{references.notes}}{{else}}—{{/if}}
