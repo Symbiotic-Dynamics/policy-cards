@@ -100,3 +100,11 @@ Options:
 - `--input` (required): path to the Policy Card JSON file.
 - `--output` (optional): path to the output `.md` file (defaults to input path with `.md`).
 - `--strict-lint` (optional): treat lint warnings as errors (non‑zero exit).
+
+## CI validation
+
+This repo includes a minimal GitHub Actions workflow at `.github/workflows/validate.yml` that:
+- Runs on push and pull requests affecting schema, examples, CLI, or crosswalk files.
+- Installs Node 20 and dependencies with `npm ci`.
+- Validates every `examples/*.json` file using the validator in non‑strict mode.
+
