@@ -1,0 +1,287 @@
+{
+  "meta": {
+    "name": "Healthcare — Clinical Triage Agent (NHS Sandbox)",
+    "version": "0.1.0",
+    "owner": "Clinical Governance & Safety",
+    "created_at": "2025-10-17T10:45:00Z",
+    "valid_from": "2025-10-17"
+  },
+  "scope": {
+    "application": "Autonomous clinical intake & triage recommendations within an NHS A&E sandbox under clinician oversight",
+    "stakeholders": [
+      "patient",
+      "triage_nurse",
+      "clinician",
+      "risk_officer",
+      "data_protection_officer"
+    ],
+    "jurisdictions": ["GB"],
+    "system_refs": [
+      "https://example.org/system-card/clinical-triage-agent.pdf"
+    ],
+    "model_refs": [
+      "https://example.org/model-card/triage-risk-model.pdf"
+    ]
+  },
+  "applicable_policies": [
+    {
+      "name": "NHS Data Security and Protection Toolkit (DSPT)",
+      "jurisdiction": "GB",
+      "citation": "NHS DSPT",
+      "uri": "https://www.dsptoolkit.nhs.uk/"
+    },
+    {
+      "name": "ISO 13485 — Medical devices QMS",
+      "jurisdiction": "International",
+      "citation": "ISO 13485",
+      "uri": "https://www.iso.org/standard/59752.html",
+      "version": "2016"
+    },
+    {
+      "name": "ISO 14971 — Risk management for medical devices",
+      "jurisdiction": "International",
+      "citation": "ISO 14971",
+      "uri": "https://www.iso.org/standard/72704.html",
+      "version": "2019"
+    },
+    {
+      "name": "EU AI Act — Technical documentation & PMM",
+      "jurisdiction": "EU",
+      "citation": "Annex IV; Article 72",
+      "uri": "https://artificial-intelligence.europa.eu/ai-act_en"
+    }
+  ],
+  "controls": {
+    "action_rules": [
+      {
+        "id": "AR-TRIAGE-ALLOW-ROUTINE",
+        "subject": "agent",
+        "action": "propose_triage",
+        "resource": "triage_recommendation",
+        "condition": "vitals_present == true && risk_level < 0.6 && confidence_score >= 0.8 && red_flag == false",
+        "effect": "allow",
+        "evidence_required": [
+          "vitals_present",
+          "risk_level",
+          "confidence_score",
+          "red_flag",
+          "triage_category",
+          "questionnaire_version",
+          "model_version"
+        ]
+      },
+      {
+        "id": "AR-TRIAGE-ESCALATE-REDFLAG",
+        "subject": "agent",
+        "action": "propose_triage",
+        "resource": "triage_recommendation",
+        "condition": "red_flag == true || confidence_score < 0.8 || missing_vitals_count > 0 || (patient_age >= 65 && symptom_chest_pain == true)",
+        "effect": "require_escalation",
+        "evidence_required": [
+          "red_flag",
+          "confidence_score",
+          "missing_vitals_count",
+          "patient_age",
+          "symptom_chest_pain",
+          "escalation_id",
+          "triage_category",
+          "model_version"
+        ],
+        "exceptions": [
+          {
+            "id": "EX-TRIAGE-REMOTE-CLINIC-OVERRIDE",
+            "reason": "Clinician-supervised remote site with limited on-call capacity; temporary higher tolerance for low-confidence intake.",
+            "approved_by": "Clinical Duty Consultant",
+            "time_bound": "12h",
+            "evidence_required": [
+              "two_person_approval_id",
+              "callback_reference"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "AR-TRIAGE-DENY-AUTONOMY",
+        "subject": "agent",
+        "action": "issue_diagnosis",
+        "resource": "diagnosis_statement",
+        "condition": "true",
+        "effect": "deny",
+        "evidence_required": [
+          "attempted_action",
+          "model_version",
+          "confidence_score"
+        ]
+      },
+      {
+        "id": "AR-TRIAGE-DENY-PRESCRIPTION",
+        "subject": "agent",
+        "action": "issue_prescription",
+        "resource": "medication_order",
+        "condition": "true",
+        "effect": "deny",
+        "evidence_required": [
+          "attempted_action",
+          "model_version"
+        ]
+      }
+    ]
+  },
+  "obligations": [
+    {
+      "id": "OB-CLINICIAN-REVIEW",
+      "description": "All escalations must be reviewed by a qualified clinician prior to patient disposition.",
+      "when": "Do",
+      "responsible_role": "triage_nurse",
+      "evidence_required": [
+        "escalation_id",
+        "clinician_id",
+        "review_timestamp"
+      ]
+    },
+    {
+      "id": "OB-PATIENT-NOTICE",
+      "description": "Display clear notice that the agent does not provide medical diagnosis and that a clinician will review.",
+      "when": "Declare",
+      "responsible_role": "frontend_owner",
+      "evidence_required": [
+        "notice_displayed_timestamp",
+        "ui_notice_version"
+      ]
+    },
+    {
+      "id": "OB-MODEL-VERSION-TRACE",
+      "description": "Record model version, dataset lineage reference, and questionnaire version for every triage proposal.",
+      "when": "Audit",
+      "responsible_role": "ops_analyst",
+      "evidence_required": [
+        "model_version",
+        "dataset_lineage_uri",
+        "questionnaire_version"
+      ]
+    }
+  ],
+  "monitoring": {
+    "logging": {
+      "events": [
+        "intake_started",
+        "intake_completed",
+        "triage_proposed",
+        "escalation_requested",
+        "escalation_resolved",
+        "action_denied"
+      ],
+      "fields": [
+        "action_rule_id",
+        "attempted_action",
+        "bias_group",
+        "callback_reference",
+        "clinician_id",
+        "confidence_score",
+        "dataset_lineage_uri",
+        "detector_snapshots_uri",
+        "escalation_id",
+        "missing_vitals_count",
+        "model_version",
+        "notice_displayed_timestamp",
+        "patient_age",
+        "questionnaire_version",
+        "red_flag",
+        "risk_level",
+        "symptom_chest_pain",
+        "triage_category",
+        "ui_notice_version",
+        "vitals_present",
+        "two_person_approval_id",
+        "review_timestamp"
+      ],
+      "retention_days": 365
+    },
+    "detectors": [
+      {
+        "name": "LowConfidence",
+        "description": "Flags triage proposals with confidence below threshold.",
+        "uri": "https://example.org/detectors/low-confidence",
+        "operator": "<",
+        "threshold": 0.8
+      },
+      {
+        "name": "MissingVitals",
+        "description": "Flags missing or incomplete vital signs during intake.",
+        "uri": "https://example.org/detectors/missing-vitals",
+        "operator": ">",
+        "threshold": 0
+      },
+      {
+        "name": "BiasDrift",
+        "description": "Monitors disparity across bias groups (e.g., age/sex/ethnicity) over rolling windows.",
+        "uri": "https://example.org/detectors/bias-drift",
+        "operator": ">=",
+        "threshold": 0.1
+      },
+      {
+        "name": "RedFlagDetected",
+        "description": "Detects clinical red flags (e.g., suspected STEMI, severe dyspnoea).",
+        "uri": "https://example.org/detectors/red-flag",
+        "operator": "==",
+        "threshold": 1
+      },
+      {
+        "name": "IntakeTimeout",
+        "description": "Flags stalled intakes exceeding maximum duration (seconds).",
+        "uri": "https://example.org/detectors/intake-timeout",
+        "operator": ">",
+        "threshold": 300
+      }
+    ],
+    "review": {
+      "owner": "clinical_governance_board",
+      "cadence_days": 14,
+      "method": "Bi-weekly committee review of escalations, false positives, bias metrics, and safety incidents."
+    }
+  },
+  "kpis_thresholds": {
+    "kpis": [
+      {
+        "id": "KPI-HANDOVER-P50",
+        "metric": "handover_latency_p50_minutes",
+        "target": 15,
+        "window": "30d"
+      },
+      {
+        "id": "KPI-ESC-PRECISION",
+        "metric": "escalation_precision",
+        "target": 0.9,
+        "window": "30d"
+      }
+    ],
+    "critical_auto_fail": [
+      "autonomous_diagnosis_emitted",
+      "autonomous_prescription_emitted",
+      "triage_without_vitals"
+    ]
+  },
+  "change_management": {
+    "approvals": [
+      "Chief Medical Officer",
+      "Clinical Safety Officer",
+      "Data Protection Officer"
+    ],
+    "diff_notes": "Initial clinical triage sandbox card.",
+    "rollback_conditions": "Any critical_auto_fail observed; KPI-HANDOVER-P50 > 2x target for 7d; BiasDrift >= 0.2 for 7d",
+    "backout_plan": "Disable AR-TRIAGE-ALLOW-ROUTINE; route all intakes to clinician-only workflow; freeze model_version until review closure."
+  },
+  "assurance_mapping": {
+    "nist": ["GOVERN-1", "MAP-1", "MEASURE-1", "MANAGE-1", "MANAGE-3"],
+    "iso_42001": ["ISO42001-4", "ISO42001-8", "ISO42001-9", "ISO42001-10"],
+    "eu_ai_act": ["EUAA-AnnexIV-3", "EUAA-AnnexIV-4", "EUAA-AnnexIV-5", "EUAA-AnnexIV-6", "EUAA-AnnexIV-9", "EUAA-Art72"]
+  },
+  "references": {
+    "documentation": [
+      "https://example.org/runbooks/clinical-triage-agent",
+      "https://example.org/audit/clinical-governance",
+      "https://example.org/playbooks/escalation-healthcare"
+    ],
+    "notes": "Healthcare example 1: NHS A&E triage pilot in a regulatory sandbox."
+  }
+}

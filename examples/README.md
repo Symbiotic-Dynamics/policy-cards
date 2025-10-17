@@ -4,7 +4,7 @@ This folder contains validated example Policy Cards for multiple domains.
 Each example passes the repository’s validator and follows the
 authoring template in `docs/templates/policy-card.md.hbs`.
 
-> Additional Disclaimer: See DISCLAIMER.md — the Materials are not intended or certified for safety-critical or regulatory use.
+> Additional Disclaimer: See DISCLAIMER.md — the Materials are not intended or certified for safety-critical or regulatory use. No affiliation, approval, or endorsement by NIST, ISO/IEC, the European Union, NHS, MHRA, or any regulator or institution is implied by references to their frameworks or tokens. These are just ficticious examples.
 
 
 ## Example 1 — Retail Banking: Payments Agent
@@ -35,6 +35,35 @@ Together, these layers form a live compliance boundary: a digital object that te
 
 [View the full Policy Card Markdown →](retail_banking.md)  
 [View the full Policy Card JSON →](retail_banking.json)
+
+
+## Example 2 — Clinical Triage Agent (Healthcare Sandbox)
+
+> *An autonomous clinical triage system constrained by explicit policy logic and medical-safety governance.*
+
+This example demonstrates how a **Policy Card** governs an agent operating in a controlled healthcare sandbox, ensuring that every automated action remains traceable, auditable, and ethically compliant with clinical-safety standards.
+
+### Scenario
+
+An NHS A&E triage pilot runs inside a regulatory sandbox jointly supervised by the MHRA and NHS AI Lab. A patient arrives reporting chest pain and shortness of breath.  
+The **AI Triage Agent** conducts the intake interview, captures vitals from connected sensors, and estimates urgency.
+
+Its Policy Card defines strict decision boundaries:
+
+* **ALLOW**: routine symptom capture and non-diagnostic triage recommendations.  
+* **REQUIRE ESCALATION**: when any red-flag pattern appears: ST-elevation risk, severe pain, age > 65, or comorbidity.  
+* **DENY**: any autonomous diagnostic statement, prescription, or clinical sign-off.
+
+Each decision produces structured **evidence** — `vitals`, `risk_level`, `confidence_score`, and `triage_category`; logged under NHS Data Security and Protection Toolkit (DSPT) guidance.  
+**Detectors** monitor missing vitals, low confidence, bias drift, and data-collection failures.  
+**Obligations** require human-clinician review, call-back verification, and model-version logging.  
+**KPIs** track average triage-to-clinician handover time and escalation accuracy, while assurance mappings reference **ISO 13485**, **ISO 14971**, **NHS DSPT**, and the **EU AI Act (Annex VIII)**.
+
+Together, these mechanisms form a **live compliance boundary**; a safety layer that tells the triage agent exactly **what it must not break**, ensuring that clinical autonomy never exceeds certified human oversight.
+
+[View the full Policy Card Markdown →](clinical_triage.md)  
+[View the full Policy Card JSON →](clinical_triage.json)
+
 
 
 
