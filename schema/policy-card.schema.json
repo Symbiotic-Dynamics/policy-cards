@@ -222,7 +222,7 @@
           "required": ["owner", "cadence_days", "method"],
           "properties": {
             "owner": { "type": "string" },
-            "cadence_days": { "type": "integer", "minimum": 7 },
+            "cadence_days": { "type": "integer", "minimum": 1 },
             "method": { "type": "string", "description": "e.g., weekly committee, automated QA, external audit." }
           }
         }

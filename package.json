@@ -1,0 +1,16 @@
+{
+  "name": "policy-cards",
+  "version": "0.1.0",
+  "description": "Policy Cards schema, examples, and tooling",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "validate": "node cli/validate.js --schema schema/policy-card.schema.json"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "yargs": "^17.7.2"
+  }
+}

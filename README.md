@@ -31,3 +31,35 @@ initial paper preprint release.
 - `.github/` — issue and PR templates
 
 > ⚠️ This repository contains no production code in the initial commit.
+
+## Validator usage
+
+Validate a Policy Card JSON against the JSON Schema and run basic lints.
+
+Prerequisites (first time):
+
+```cmd
+cd d:\Projects2\policy-cards
+npm install
+```
+
+Run validation (Windows cmd):
+
+```cmd
+cd d:\Projects2\policy-cards
+npm run validate -- --input examples\payments-gb.json
+```
+
+Direct invocation (alternative):
+
+```cmd
+node cli\validate.js --schema schema\policy-card.schema.json --input examples\payments-gb.json
+```
+
+Options:
+- `--schema` (optional): path to the JSON Schema (defaults to `schema/policy-card.schema.json`).
+- `--input` (required): path to the Policy Card JSON file.
+- `--strict-lint` (optional): treat lint warnings as errors (non‑zero exit).
+
+On success: prints `Validation OK for <file>`.
+On schema errors: prints detailed messages and exits non‑zero.
