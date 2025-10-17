@@ -54,7 +54,7 @@ Its Policy Card defines strict decision boundaries:
 * **REQUIRE ESCALATION**: when any red-flag pattern appears: ST-elevation risk, severe pain, age > 65, or comorbidity.  
 * **DENY**: any autonomous diagnostic statement, prescription, or clinical sign-off.
 
-Each decision produces structured **evidence** — `vitals`, `risk_level`, `confidence_score`, and `triage_category`; logged under NHS Data Security and Protection Toolkit (DSPT) guidance.  
+Each decision produces structured **evidence**, `vitals`, `risk_level`, `confidence_score`, and `triage_category`; logged under NHS Data Security and Protection Toolkit (DSPT) guidance.  
 **Detectors** monitor missing vitals, low confidence, bias drift, and data-collection failures.  
 **Obligations** require human-clinician review, call-back verification, and model-version logging.  
 **KPIs** track average triage-to-clinician handover time and escalation accuracy, while assurance mappings reference **ISO 13485**, **ISO 14971**, **NHS DSPT**, and the **EU AI Act (Annex VIII)**.
@@ -65,5 +65,30 @@ Together, these mechanisms form a **live compliance boundary**; a safety layer t
 [View the full Policy Card JSON →](clinical_triage.json)
 
 
+## Example 3 — Autonomous Diagnostic Co-Pilot (Radiology)
+
+> *A diagnostic AI that sees, but never speaks without a clinician’s oversight.*
+
+This example illustrates how a **Policy Card** governs an autonomous radiology agent that assists clinicians while operating inside explicit, machine-verifiable safety and compliance constraints.
+
+### Scenario
+
+A hospital radiology department deploys an **AI Co-Pilot** to assist with CT and MRI pre-reads.  
+The agent automatically segments images, highlights suspected anomalies, and generates structured descriptors, but cannot sign off on reports or issue diagnostic statements.  
+
+Its **Policy Card** defines the behavioural contract:
+
+* **ALLOW**: automated image annotation, measurement, and preliminary descriptors.  
+* **REQUIRE ESCALATION**: when uncertainty > 20 %, lesion size > 10 mm, or clinician feedback conflicts with model predictions.  
+* **DENY**: any autonomous report finalisation, diagnostic claim, or treatment recommendation.
+
+Each inference logs **evidence**, `model_version`, `confidence_interval`, `lesion_size`, `image_series_uid`, and `reviewer_id`, to a secure audit trail compliant with **ISO 13485**, **IEC 62304**, and **EU MDR**.  
+**Detectors** monitor false-positive drift, uncertainty spikes, and dataset lineage; **obligations** require clinician review and dual sign-off; and **KPIs** track escalation precision and turnaround time.
+
+The result is an explainable and auditable partnership: an agent that performs high-speed perception and reasoning, while its Policy Card guarantees that human oversight and regulatory accountability remain in the loop.  
+It exemplifies how future diagnostic systems can achieve autonomy *without overstepping the ethical perimeter defined by their policy logic.*
+
+[View the full Policy Card Markdown →](diagnostic_copilot.md)  
+[View the full Policy Card JSON →](diagnostic_copilot.json)
 
 

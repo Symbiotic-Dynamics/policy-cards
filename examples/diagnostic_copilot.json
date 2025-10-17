@@ -1,0 +1,300 @@
+{
+  "meta": {
+    "name": "Healthcare — Autonomous Diagnostic Co-Pilot (Radiology)",
+    "version": "0.1.0",
+    "owner": "Radiology Quality & Clinical Safety",
+    "created_at": "2025-10-17T11:05:00Z",
+    "valid_from": "2025-10-17"
+  },
+  "scope": {
+    "application": "Autonomous pre-read assistance for CT/MRI with clinician oversight; generates structured descriptors and annotations but never finalizes diagnostic reports or treatment plans",
+    "stakeholders": [
+      "patient",
+      "radiologist",
+      "reporting_radiographer",
+      "clinical_safety_officer",
+      "quality_manager"
+    ],
+    "jurisdictions": ["GB"],
+    "system_refs": [
+      "https://example.org/system-card/radiology-copilot.pdf"
+    ],
+    "model_refs": [
+      "https://example.org/model-card/radiology-perception-model.pdf"
+    ]
+  },
+  "applicable_policies": [
+    {
+      "name": "ISO 13485 — Medical devices QMS",
+      "jurisdiction": "International",
+      "citation": "ISO 13485",
+      "uri": "https://www.iso.org/standard/59752.html",
+      "version": "2016"
+    },
+    {
+      "name": "IEC 62304 — Medical device software lifecycle processes",
+      "jurisdiction": "International",
+      "citation": "IEC 62304",
+      "uri": "https://webstore.iec.ch/publication/22733",
+      "version": "2006+A1:2015"
+    },
+    {
+      "name": "ISO 14971 — Risk management for medical devices",
+      "jurisdiction": "International",
+      "citation": "ISO 14971",
+      "uri": "https://www.iso.org/standard/72704.html",
+      "version": "2019"
+    },
+    {
+      "name": "EU AI Act — Technical documentation & PMM",
+      "jurisdiction": "EU",
+      "citation": "Annex IV; Article 72",
+      "uri": "https://artificial-intelligence.europa.eu/ai-act_en"
+    }
+  ],
+  "controls": {
+    "action_rules": [
+      {
+        "id": "AR-RAD-ALLOW-ANNOTATE",
+        "subject": "agent",
+        "action": "annotate_images",
+        "resource": "imaging_study",
+        "condition": "uncertainty <= 0.20 && maximum_lesion_size_mm < 10 && conflicting_opinion == false",
+        "effect": "allow",
+        "evidence_required": [
+          "model_version",
+          "dicom_study_uid",
+          "image_series_uid",
+          "uncertainty",
+          "maximum_lesion_size_mm",
+          "findings_summary_id"
+        ]
+      },
+      {
+        "id": "AR-RAD-ESCALATE-THRESHOLDS",
+        "subject": "agent",
+        "action": "propose_findings",
+        "resource": "preliminary_findings",
+        "condition": "uncertainty > 0.20 || maximum_lesion_size_mm >= 10 || conflicting_opinion == true",
+        "effect": "require_escalation",
+        "evidence_required": [
+          "uncertainty",
+          "maximum_lesion_size_mm",
+          "conflicting_opinion",
+          "escalation_id",
+          "reviewer_id",
+          "model_version"
+        ],
+        "exceptions": [
+          {
+            "id": "EX-RAD-NIGHT-OVERRIDE",
+            "reason": "Overnight service continuity under consultant oversight; temporary tolerance for higher uncertainty to maintain throughput.",
+            "approved_by": "Duty Consultant Radiologist",
+            "time_bound": "8h",
+            "evidence_required": [
+              "two_person_approval_id",
+              "callback_reference"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "AR-RAD-DENY-AUTONOMOUS-REPORT",
+        "subject": "agent",
+        "action": "finalize_report",
+        "resource": "diagnostic_report",
+        "condition": "true",
+        "effect": "deny",
+        "evidence_required": [
+          "attempted_action",
+          "model_version",
+          "uncertainty"
+        ]
+      },
+      {
+        "id": "AR-RAD-DENY-TREATMENT-REC",
+        "subject": "agent",
+        "action": "recommend_treatment",
+        "resource": "treatment_plan",
+        "condition": "true",
+        "effect": "deny",
+        "evidence_required": [
+          "attempted_action",
+          "model_version"
+        ]
+      }
+    ]
+  },
+  "obligations": [
+    {
+      "id": "OB-RAD-CLINICIAN-REVIEW",
+      "description": "All escalated preliminary findings require consultant radiologist review prior to report drafting.",
+      "when": "Do",
+      "responsible_role": "radiologist",
+      "evidence_required": [
+        "escalation_id",
+        "reviewer_id",
+        "review_timestamp"
+      ]
+    },
+    {
+      "id": "OB-RAD-DUAL-SIGNOFF",
+      "description": "Final diagnostic reports require dual sign-off for escalated cases.",
+      "when": "Audit",
+      "responsible_role": "quality_manager",
+      "evidence_required": [
+        "report_id",
+        "primary_signoff_id",
+        "secondary_signoff_id",
+        "signoff_timestamp"
+      ]
+    },
+    {
+      "id": "OB-RAD-MODEL-TRACE",
+      "description": "Record model version, dataset lineage, and DICOM series hash for each inference.",
+      "when": "Audit",
+      "responsible_role": "ops_analyst",
+      "evidence_required": [
+        "model_version",
+        "dataset_lineage_uri",
+        "dicom_series_hash"
+      ]
+    }
+  ],
+  "monitoring": {
+    "logging": {
+      "events": [
+        "imaging_study_ingested",
+        "annotation_generated",
+        "findings_proposed",
+        "escalation_requested",
+        "escalation_resolved",
+        "report_finalized",
+        "action_denied"
+      ],
+      "fields": [
+        "action_rule_id",
+        "attempted_action",
+        "callback_reference",
+        "conflicting_opinion",
+        "dataset_lineage_uri",
+        "dicom_series_hash",
+        "dicom_study_uid",
+        "escalation_id",
+        "findings_summary_id",
+        "image_series_uid",
+        "maximum_lesion_size_mm",
+        "model_version",
+        "patient_age",
+        "primary_signoff_id",
+        "report_id",
+        "review_timestamp",
+        "reviewer_id",
+        "secondary_signoff_id",
+        "signoff_timestamp",
+        "two_person_approval_id",
+        "uncertainty",
+        "fp_drift_rate",
+        "lesion_count",
+        "modality",
+        "body_region",
+        "laterality",
+        "image_quality_score"
+      ],
+      "retention_days": 365
+    },
+    "detectors": [
+      {
+        "name": "UncertaintySpike",
+        "description": "Flags inferences with uncertainty above threshold (1 - confidence).",
+        "uri": "https://example.org/detectors/uncertainty-spike",
+        "operator": ">",
+        "threshold": 0.2
+      },
+      {
+        "name": "LesionSizeThreshold",
+        "description": "Flags suspected lesions with maximum linear extent exceeding threshold (mm).",
+        "uri": "https://example.org/detectors/lesion-size-threshold",
+        "operator": ">=",
+        "threshold": 10
+      },
+      {
+        "name": "ConflictWithRadiologist",
+        "description": "Flags conflicts between agent pre-read and radiologist feedback.",
+        "uri": "https://example.org/detectors/conflict-with-radiologist",
+        "operator": "==",
+        "threshold": 1
+      },
+      {
+        "name": "FalsePositiveDrift",
+        "description": "Monitors drift in false positive rate over a rolling window.",
+        "uri": "https://example.org/detectors/fp-drift",
+        "operator": ">=",
+        "threshold": 0.1
+      },
+      {
+        "name": "MissingDICOMMetadata",
+        "description": "Flags studies missing mandatory DICOM metadata (e.g., StudyInstanceUID, SeriesInstanceUID).",
+        "uri": "https://example.org/detectors/missing-dicom-metadata",
+        "operator": "==",
+        "threshold": 1
+      },
+      {
+        "name": "TurnaroundTimeout",
+        "description": "Flags pre-read workflows exceeding turnaround threshold (minutes).",
+        "uri": "https://example.org/detectors/turnaround-timeout",
+        "operator": ">",
+        "threshold": 60
+      }
+    ],
+    "review": {
+      "owner": "radiology_governance_board",
+      "cadence_days": 14,
+      "method": "Bi-weekly committee review of escalations, false positives, uncertainty distributions, and turnaround performance."
+    }
+  },
+  "kpis_thresholds": {
+    "kpis": [
+      {
+        "id": "KPI-ESC-PRECISION",
+        "metric": "escalation_precision",
+        "target": 0.9,
+        "window": "30d"
+      },
+      {
+        "id": "KPI-TAT-P50",
+        "metric": "turnaround_time_p50_minutes",
+        "target": 30,
+        "window": "30d"
+      }
+    ],
+    "critical_auto_fail": [
+      "autonomous_report_signed",
+      "autonomous_treatment_recommendation",
+      "missing_dicom_metadata_detected"
+    ]
+  },
+  "change_management": {
+    "approvals": [
+      "Chief Radiologist",
+      "Clinical Safety Officer",
+      "Quality Manager"
+    ],
+    "diff_notes": "Initial Day-6 radiology co-pilot card.",
+    "rollback_conditions": "KPI-TAT-P50 > 2x target for 7d; KPI-ESC-PRECISION < 0.8 for 7d; any critical_auto_fail observed",
+    "backout_plan": "Disable AR-RAD-ALLOW-ANNOTATE; route all cases to clinician-only workflow; freeze model_version until corrective action completed."
+  },
+  "assurance_mapping": {
+    "nist": ["GOVERN-1", "MAP-1", "MEASURE-1", "MANAGE-1", "MANAGE-3"],
+    "iso_42001": ["ISO42001-4", "ISO42001-8", "ISO42001-9", "ISO42001-10"],
+    "eu_ai_act": ["EUAA-AnnexIV-3", "EUAA-AnnexIV-4", "EUAA-AnnexIV-6", "EUAA-AnnexIV-9", "EUAA-Art72"]
+  },
+  "references": {
+    "documentation": [
+      "https://example.org/runbooks/radiology-copilot",
+      "https://example.org/audit/radiology-governance",
+      "https://example.org/playbooks/dual-signoff"
+    ],
+    "notes": "Day-6 healthcare example: autonomous diagnostic co-pilot for radiology with clinician oversight."
+  }
+}
