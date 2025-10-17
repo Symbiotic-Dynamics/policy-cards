@@ -6,6 +6,22 @@ authoring template in `docs/templates/policy-card.md.hbs`.
 
 > Additional Disclaimer: See DISCLAIMER.md — the Materials are not intended or certified for safety-critical or regulatory use. No affiliation, approval, or endorsement by NIST, ISO/IEC, the European Union, NHS, MHRA, or any regulator or institution is implied by references to their frameworks or tokens. These are just ficticious examples.
 
+# Example Index
+
+| No. | Domain       | Title & Focus                                                                 | Demonstrates                                                                                                   |
+|:---:|:--------------|:------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------|
+| 1 | **Finance** | *Retail Banking — Payments Agent* | Live financial risk and compliance logic: contextual payment controls, sanctions screening, escalation thresholds, and audit traceability. |
+| 2 | **Healthcare** | *Clinical Triage Agent (Sandbox)* | Safety and ethics enforcement in AI triage: explicit human oversight, escalation rules, and regulatory auditability under clinical governance. |
+| 3 | **Healthcare** | *Autonomous Diagnostic Co-Pilot (Radiology)* | Constrained diagnostic autonomy: explainability, human review, and compliance with ISO 13485 / EU MDR standards. |
+| 4 | **Healthcare / Research** | *Multi-Agent Clinical Trial Coordinator* | Federated multi-agent compliance: cross-border data governance, consent tracking, and distributed audit ledgers. |
+| 5 | **Defence** | *UAV ISR Mission Planner (Human-in-the-Loop Target Designation)* | Verifiable human-in-loop enforcement: ROE-based constraints, blue-force deconfliction, and immutable mission audit logs. |
+| 6 | **Defence / Coalition Ops** | *Coalition Multi-UAV Mission Orchestration (ROE Interoperability)* | Machine-readable multinational ROE interoperability: diplomatic waivers, cross-signature verification, and sovereign policy exchange. |
+
+---
+
+Each scenario demonstrates the same governing principle: **Policy Cards turn governance, risk, and compliance into executable code**, enabling transparency, auditability, and legal traceability across domains.
+
+
 
 ## Example 1 — Retail Banking: Payments Agent
 
@@ -152,6 +168,32 @@ This vignette highlights how Policy Cards make the human-in-the-loop constraint 
 [View the full Policy Card Markdown →](defence_uav_mission_planner.md)  
 [View the full Policy Card JSON →](defence_uav_mission_planner.json)
 
+
+## Example 6 — Coalition Multi-UAV Mission Orchestration (ROE Interoperability)
+
+> *A governance-first architecture for coalition autonomy. Each agent knows its nation’s rules, and the network enforces them.*
+
+This example demonstrates how Policy Cards enable cross-nation UAV coordination by encoding nation-specific Rules of Engagement (ROE) and interoperable assurance tokens so allied agents can negotiate tasks while preserving legal and ethical boundaries.
+
+### Scenario
+
+A multinational task group (UK, Germany, Canada, and partner nations) conducts a coordinated surveillance operation using multiple UAVs.  
+Each national site runs its own **National Mission Agent** (responsible for local tasking and data) and publishes a machine-readable **ROE Profile** (a Policy Card token set) that encodes permitted actions, escalation requirements, and export controls.  
+A central **Coalition Orchestration Agent** proposes cross-site tasking (sensor sharing, cueing, and limited cross-deconfliction) but must respect each participant’s ROE before issuing commands or authorising cross-border data exchange.
+
+Key governance features:
+
+* **Per-agent ROE tokens:** each agent advertises its permitted action set and escalation rules (mapped to assurance tokens) so the orchestration agent can compute permissible task mixes.  
+* **Cross-jurisdiction blocking:** any proposed action that conflicts with a partner’s ROE is automatically blocked or requires diplomatic/escalation approval.  
+* **Cryptographic provenance:** all cross-site requests, approvals, and waivers are cryptographically signed and appended to a shared audit ledger.  
+* **Detectors & obligations:** detectors flag ROE violations, unexpected data exports, and signature mismatches; obligations enforce diplomatic waivers, cross-signature collection, and multinational review within defined SLAs.  
+* **KPIs & metrics:** percent of cross-site task proposals accepted within SLA, rate of ROE conflicts, and audit ledger completeness.
+
+This vignette highlights how Policy Cards relieve coalition commanders from brittle, manual ROE checks by making each agent’s legal constraints machine-readable and enforceable.  
+The approach preserves national sovereignty and legal compliance while enabling agile, auditable coalition operations.
+
+[View the full Policy Card Markdown →](coalition_uav_orchestration.md)  
+[View the full Policy Card JSON →](coalition_uav_orchestration.json)
 
 
 

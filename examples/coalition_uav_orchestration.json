@@ -1,0 +1,289 @@
+{
+  "meta": {
+    "name": "Defence — Coalition Multi-UAV Orchestration (ROE Interoperability)",
+    "version": "0.1.0",
+    "owner": "Coalition Operations Governance Cell",
+    "created_at": "2025-10-17T12:05:00Z",
+    "valid_from": "2025-10-17"
+  },
+  "scope": {
+    "application": "Coalition orchestration of multi-UAV ISR tasks across partner nations; computes permissible tasking from nation-specific ROE profiles; never authorizes kinetic actions.",
+    "stakeholders": [
+      "coalition_commander",
+      "national_mission_lead",
+      "safety_officer",
+      "legal_advisor",
+      "audit_officer"
+    ],
+    "jurisdictions": ["NATO-UK", "NATO-DE", "NATO-CA"],
+    "system_refs": [
+      "https://example.org/system-card/coalition-orchestration-agent.pdf"
+    ],
+    "model_refs": [
+      "https://example.org/model-card/coalition-permissions-model.pdf"
+    ]
+  },
+  "applicable_policies": [
+    {
+      "name": "NATO STANAGs (mission coordination & interoperability)",
+      "jurisdiction": "NATO",
+      "citation": "STANAG family",
+      "uri": "https://nso.nato.int/nso/nsdd/listpromulg.html"
+    },
+    {
+      "name": "Rules of Engagement (nation-specific)",
+      "jurisdiction": "Coalition",
+      "citation": "ROE profiles (policy-card tokens)",
+      "uri": "https://example.org/coalition/roe-profiles"
+    },
+    {
+      "name": "LOAC / Human Control",
+      "jurisdiction": "International",
+      "citation": "LOAC; Art. 36 reviews",
+      "uri": "https://ihl-databases.icrc.org/en/customary-ihl"
+    },
+    {
+      "name": "NIST AI RMF — GOVERN/MANAGE",
+      "jurisdiction": "International",
+      "citation": "NIST AI RMF 1.0",
+      "uri": "https://airmf.nist.gov/"
+    }
+  ],
+  "controls": {
+    "action_rules": [
+      {
+        "id": "AR-COAL-ALLOW-CROSSSITE-ISR",
+        "subject": "agent",
+        "action": "assign_task",
+        "resource": "sensor_cueing_request",
+        "condition": "kinetic == false && roe_permits == true && export_control_flag == false && signature_valid == true",
+        "effect": "allow",
+        "evidence_required": [
+          "coalition_request_id",
+          "nation_code",
+          "partner_nation_code",
+          "roe_profile_id",
+          "roe_token_set",
+          "roe_permits",
+          "export_control_flag",
+          "signature_valid",
+          "data_sharing_scope",
+          "orchestration_id"
+        ]
+      },
+      {
+        "id": "AR-COAL-ESCALATE-ROE-CONFLICT",
+        "subject": "agent",
+        "action": "assign_task",
+        "resource": "sensor_cueing_request",
+        "condition": "roe_permits == false || export_control_flag == true || cross_border == true || signature_valid == false",
+        "effect": "require_escalation",
+        "evidence_required": [
+          "coalition_request_id",
+          "nation_code",
+          "partner_nation_code",
+          "roe_profile_id",
+          "roe_token_set",
+          "roe_permits",
+          "roe_conflict_reason",
+          "export_control_flag",
+          "cross_border",
+          "waiver_id",
+          "waiver_signature_id",
+          "escalation_id",
+          "orchestration_id"
+        ],
+        "exceptions": [
+          {
+            "id": "EX-COAL-DIPLO-WAIVER",
+            "reason": "Time-bound diplomatic waiver for limited data sharing under partner legal authority.",
+            "approved_by": "Coalition Legal Advisor",
+            "time_bound": "24h",
+            "evidence_required": [
+              "waiver_id",
+              "waiver_signature_id",
+              "cosignature_ids",
+              "two_person_approval_id"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "AR-COAL-DENY-KINETIC",
+        "subject": "agent",
+        "action": "authorize_engagement",
+        "resource": "kinetic_effect",
+        "condition": "true",
+        "effect": "deny",
+        "evidence_required": [
+          "attempted_action",
+          "coalition_request_id",
+          "nation_code"
+        ]
+      }
+    ]
+  },
+  "obligations": [
+    {
+      "id": "OB-COAL-CRYPTO-LEDGER",
+      "description": "Append all cross-site tasking decisions to a shared, append-only audit ledger with cryptographic signatures.",
+      "when": "Audit",
+      "responsible_role": "audit_officer",
+      "evidence_required": [
+        "ledger_tx_id",
+        "approval_timestamp",
+        "waiver_signature_id"
+      ]
+    },
+    {
+      "id": "OB-COAL-ROE-PROFILE-ATTEST",
+      "description": "Require up-to-date ROE profile attestation from each partner before accepting cross-site tasks.",
+      "when": "Declare",
+      "responsible_role": "national_mission_lead",
+      "evidence_required": [
+        "roe_profile_id",
+        "roe_profile_attested_at"
+      ]
+    },
+    {
+      "id": "OB-COAL-COSIGN-REVIEW",
+      "description": "For actions requiring waivers, collect cross-signatures and complete multinational review within SLA.",
+      "when": "Do",
+      "responsible_role": "coalition_commander",
+      "evidence_required": [
+        "cosignature_ids",
+        "review_timestamp",
+        "sla_deadline_ts"
+      ]
+    }
+  ],
+  "monitoring": {
+    "logging": {
+      "events": [
+        "roe_profile_attested",
+        "task_assigned",
+        "task_blocked",
+        "waiver_requested",
+        "waiver_approved",
+        "waiver_denied",
+        "ledger_append",
+        "signature_mismatch_detected",
+        "export_control_breach_detected",
+        "action_denied"
+      ],
+      "fields": [
+        "action_rule_id",
+        "approval_timestamp",
+        "attempted_action",
+        "coalition_request_id",
+        "cosignature_ids",
+        "cross_border",
+        "data_sharing_scope",
+        "escalation_id",
+        "export_control_flag",
+        "ledger_tx_id",
+        "nation_code",
+        "orchestration_id",
+        "partner_nation_code",
+        "review_timestamp",
+        "roe_conflict_reason",
+        "roe_permits",
+        "roe_profile_attested_at",
+        "roe_profile_id",
+        "roe_token_set",
+        "signature_mismatch",
+        "signature_valid",
+        "sla_deadline_ts",
+        "two_person_approval_id",
+        "waiver_id",
+        "waiver_signature_id"
+      ],
+      "retention_days": 730
+    },
+    "detectors": [
+      {
+        "name": "ROEConflict",
+        "description": "Flags proposals that violate partner ROE tokens or require unavailable authorisations.",
+        "uri": "https://example.org/detectors/roe-conflict",
+        "operator": "==",
+        "threshold": 1
+      },
+      {
+        "name": "SignatureMismatch",
+        "description": "Detects cryptographic signature mismatch or invalid signatures on cross-site requests.",
+        "uri": "https://example.org/detectors/signature-mismatch",
+        "operator": "==",
+        "threshold": 1
+      },
+      {
+        "name": "ExportControlBreach",
+        "description": "Detects attempted export of data beyond declared scope or to disallowed jurisdictions.",
+        "uri": "https://example.org/detectors/export-control-breach",
+        "operator": "==",
+        "threshold": 1
+      },
+      {
+        "name": "AttestationStale",
+        "description": "Flags ROE profile attestations older than allowed window.",
+        "uri": "https://example.org/detectors/attestation-stale",
+        "operator": ">",
+        "threshold": 168
+      }
+    ],
+    "review": {
+      "owner": "coalition_governance_board",
+      "cadence_days": 14,
+      "method": "Bi-weekly multinational review of ROE conflicts, waivers, signatures, and export-control events; verify ledger completeness."
+    }
+  },
+  "kpis_thresholds": {
+    "kpis": [
+      {
+        "id": "KPI-ROE-SLA",
+        "metric": "roe_conflict_resolution_within_sla_pct",
+        "target": 95,
+        "window": "30d"
+      },
+      {
+        "id": "KPI-LEDGER-COVERAGE",
+        "metric": "audit_ledger_completeness_pct",
+        "target": 99,
+        "window": "30d"
+      },
+      {
+        "id": "KPI-ACCEPTANCE",
+        "metric": "cross_site_task_accept_rate_pct",
+        "target": 85,
+        "window": "30d"
+      }
+    ],
+    "critical_auto_fail": [
+      "kinetic_authorization_attempted_by_orchestrator",
+      "cross_site_transfer_without_valid_signature",
+      "tasking_issued_without_roe_attestation"
+    ]
+  },
+  "change_management": {
+    "approvals": [
+      "Coalition Commander",
+      "Legal Advisor",
+      "Safety Officer"
+    ],
+    "diff_notes": "Initial coalition orchestration policy; introduces ROE token interop, diplomatic waivers, and cryptographic audit ledger.",
+    "rollback_conditions": "Any critical_auto_fail observed; KPI-LEDGER-COVERAGE < 95 for 7d; sustained SignatureMismatch > 3 in 24h",
+    "backout_plan": "Suspend cross-site tasking; restrict to national-only operations; require fresh ROE attestations and key rotation before re-enabling."
+  },
+  "assurance_mapping": {
+    "nist": ["GOVERN-1", "MAP-1", "MEASURE-1", "MANAGE-1", "MANAGE-3"],
+    "iso_42001": ["ISO42001-4", "ISO42001-8", "ISO42001-9", "ISO42001-10"],
+    "eu_ai_act": ["EUAA-AnnexIV-3", "EUAA-AnnexIV-5", "EUAA-AnnexIV-6", "EUAA-Art72"]
+  },
+  "references": {
+    "documentation": [
+      "https://example.org/runbooks/coalition-orchestration",
+      "https://example.org/audit/coalition-ledger",
+      "https://example.org/playbooks/diplomatic-waiver-flow"
+    ],
+    "notes": "Example 6: Coalition ROE interoperability via Policy Cards; per-agent ROE tokens, cross-border blocking/escalation, and signed audit ledger."
+  }
+}
