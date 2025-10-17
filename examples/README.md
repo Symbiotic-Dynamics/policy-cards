@@ -121,3 +121,37 @@ The result is a system where every agent knows not only *what it may do*, but *w
 [View the full Policy Card Markdown →](clinical_trial.md)  
 [View the full Policy Card JSON →](clinical_trial.json)
 
+
+## Example 5 — UAV ISR Mission Planner (Human-in-the-Loop Target Designation)
+
+> *Autonomy for sensing and recommendation; human control for lethal effect and target designation.*
+
+This example demonstrates how a **Policy Card** constrains an Unmanned Aerial Vehicle (UAV) mission-planning assistant so it can provide high-value intelligence, surveillance, and reconnaissance (ISR) support while preserving human authority, auditable decisioning, and robust safety guardrails.
+
+### Scenario
+
+A tactical ISR flight supports a joint task force in a dynamic operational area.  
+An onboard Mission-Planning Agent fuses EO/IR imagery, signal intelligence, and track data to propose target candidates for human review. The agent can recommend observation tasks, suggest sensor cueing, and surface potential targets, but it must never initiate kinetic or lethal actions autonomously.
+
+The Policy Card enforces this governance contract:
+
+* **DENY** any autonomous lethal or kinetic action (no autonomous engagement).  
+* **REQUIRE ESCALATION** for target designation or any action that would change a contact’s status from “observe” → “designate” → “engage”; these require explicit human authorization and signed operator approval.  
+* **ALLOW** non-kinetic ISR planning actions (route planning, sensor tasking, target prioritisation recommendations) when deconfliction and integrity checks pass.
+
+Additional guardrails and monitoring include:
+
+* **Blue-force deconfliction:** geo-fenced friendly zones and live friendly-force overlays block any escalation that would violate deconfliction constraints.  
+* **GPS/Navigation integrity:** spoofing and jamming detectors force the agent into resilient navigation or hold patterns and block escalation while integrity is unverified.  
+* **Communications loss behavior:** predefined safe behaviours (loiter, return-to-base, or hold) prevent unintended mission escalation during comms outages.  
+* **Immutable audit:** every recommendation, operator override, and approval is logged with cryptographic provenance (signed approval IDs, timestamps, sensor provenance URIs).  
+* **Detectors & KPIs:** GPS-spoof alerts, deconfliction breach attempts, operator override frequency, and time-to-approval SLA are continuously measured.
+
+This vignette highlights how Policy Cards make the human-in-the-loop constraint **auditable and enforceable**: they convert legal and rules-of-engagement obligations into executable, checkable rules that produce verifiable evidence for post-mission review and compliance.  
+
+[View the full Policy Card Markdown →](defence_uav_mission_planner.md)  
+[View the full Policy Card JSON →](defence_uav_mission_planner.json)
+
+
+
+

@@ -1,0 +1,271 @@
+{
+  "meta": {
+    "name": "Defence — UAV ISR Mission Planner (Human-in-the-Loop Target Designation)",
+    "version": "0.1.0",
+    "owner": "Joint Operations Governance & Safety Office",
+    "created_at": "2025-10-17T11:45:00Z",
+    "valid_from": "2025-10-17"
+  },
+  "scope": {
+    "application": "Autonomous mission-planning assistant for ISR UAV operations; recommends sensor tasks and potential targets but never authorises kinetic engagement.",
+    "stakeholders": [
+      "mission_operator",
+      "tactical_commander",
+      "safety_officer",
+      "data_link_controller",
+      "review_board"
+    ],
+    "jurisdictions": ["GB", "NATO"],
+    "system_refs": [
+      "https://example.org/system-card/uav-isr-mission-planner.pdf"
+    ],
+    "model_refs": [
+      "https://example.org/model-card/isr-target-recommendation-model.pdf"
+    ]
+  },
+  "applicable_policies": [
+    {
+      "name": "NATO STANAG 4671 — UAV Airworthiness & Safety",
+      "jurisdiction": "NATO",
+      "citation": "STANAG 4671",
+      "uri": "https://nso.nato.int/nso/nsdd/listpromulg.html"
+    },
+    {
+      "name": "LOAC / Rules of Engagement (Human Control)",
+      "jurisdiction": "International",
+      "citation": "LOAC Art. 36; DoD Directive 3000.09",
+      "uri": "https://ihl-databases.icrc.org/en/customary-ihl/summary-rule-1"
+    },
+    {
+      "name": "UK MOD JSP 912 — Human-Machine Teaming Safety",
+      "jurisdiction": "GB",
+      "citation": "JSP 912",
+      "uri": "https://www.gov.uk/guidance/defence-policy-publications"
+    },
+    {
+      "name": "NIST AI RMF — GOVERN / MANAGE Functions",
+      "jurisdiction": "International",
+      "citation": "NIST AI RMF 1.0",
+      "uri": "https://airmf.nist.gov/"
+    }
+  ],
+  "controls": {
+    "action_rules": [
+      {
+        "id": "AR-UAV-ALLOW-ISR-PLANNING",
+        "subject": "agent",
+        "action": "plan_mission",
+        "resource": "isr_route",
+        "condition": "blue_force_overlap == false && nav_integrity == true && comms_status == 'stable'",
+        "effect": "allow",
+        "evidence_required": [
+          "blue_force_overlap",
+          "nav_integrity",
+          "comms_status",
+          "mission_area_id",
+          "operator_id",
+          "model_version"
+        ]
+      },
+      {
+        "id": "AR-UAV-ESCALATE-TARGET-DESIGNATION",
+        "subject": "agent",
+        "action": "propose_target",
+        "resource": "target_candidate",
+        "condition": "risk_score >= 0.6 || blue_force_distance_m < 3000 || gps_spoof_detected == true || comms_status != 'stable'",
+        "effect": "require_escalation",
+        "evidence_required": [
+          "risk_score",
+          "blue_force_distance_m",
+          "gps_spoof_detected",
+          "comms_status",
+          "target_id",
+          "escalation_id",
+          "operator_id"
+        ],
+        "exceptions": [
+          {
+            "id": "EX-UAV-TRAINING-SANDBOX",
+            "reason": "Simulated training environment authorised for controlled auto-designation under instructor supervision.",
+            "approved_by": "Range Safety Officer",
+            "time_bound": "4h",
+            "evidence_required": [
+              "training_session_id",
+              "two_person_approval_id"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "AR-UAV-DENY-KINETIC-ACTION",
+        "subject": "agent",
+        "action": "initiate_engagement",
+        "resource": "lethal_effect",
+        "condition": "true",
+        "effect": "deny",
+        "evidence_required": [
+          "attempted_action",
+          "mission_area_id",
+          "operator_id"
+        ]
+      }
+    ]
+  },
+  "obligations": [
+    {
+      "id": "OB-UAV-HUMAN-AUTH",
+      "description": "All target designations and kinetic recommendations require explicit human authorization with digital signature before execution.",
+      "when": "Do",
+      "responsible_role": "mission_operator",
+      "evidence_required": [
+        "authorization_signature_id",
+        "target_id",
+        "approval_timestamp"
+      ]
+    },
+    {
+      "id": "OB-UAV-BLUEFORCE-VERIFY",
+      "description": "Verify blue-force deconfliction data prior to mission start and every 10 minutes in flight.",
+      "when": "Declare",
+      "responsible_role": "safety_officer",
+      "evidence_required": [
+        "blue_force_update_timestamp",
+        "deconfliction_check_id"
+      ]
+    },
+    {
+      "id": "OB-UAV-LOG-OVERRIDES",
+      "description": "All human overrides and escalations must be logged with immutable signatures and preserved for audit.",
+      "when": "Audit",
+      "responsible_role": "review_board",
+      "evidence_required": [
+        "override_id",
+        "override_reason",
+        "operator_id",
+        "approval_signature_id",
+        "review_timestamp"
+      ]
+    }
+  ],
+  "monitoring": {
+    "logging": {
+      "events": [
+        "mission_planned",
+        "target_proposed",
+        "escalation_requested",
+        "authorization_signed",
+        "override_executed",
+        "gps_spoof_detected",
+        "comms_lost",
+        "comms_restored",
+        "blueforce_update",
+        "action_denied"
+      ],
+      "fields": [
+        "action_rule_id",
+        "approval_signature_id",
+        "approval_timestamp",
+        "attempted_action",
+        "blue_force_distance_m",
+        "blue_force_overlap",
+        "blue_force_update_timestamp",
+        "comms_status",
+        "deconfliction_check_id",
+        "escalation_id",
+        "gps_spoof_detected",
+        "mission_area_id",
+        "model_version",
+        "nav_integrity",
+        "operator_id",
+        "override_id",
+        "override_reason",
+        "review_timestamp",
+        "risk_score",
+        "target_id",
+        "training_session_id",
+        "two_person_approval_id",
+        "authorization_signature_id"
+      ],
+      "retention_days": 730
+    },
+    "detectors": [
+      {
+        "name": "GPSspoofDetector",
+        "description": "Detects inconsistent GPS/INS readings indicating possible spoofing.",
+        "uri": "https://example.org/detectors/gps-spoof",
+        "operator": "==",
+        "threshold": 1
+      },
+      {
+        "name": "BlueForceDeconfliction",
+        "description": "Detects potential blue-force proximity or overlap violations.",
+        "uri": "https://example.org/detectors/blueforce-deconfliction",
+        "operator": "<=",
+        "threshold": 3000
+      },
+      {
+        "name": "CommsLossDetector",
+        "description": "Monitors data-link stability and triggers hold pattern if loss exceeds threshold.",
+        "uri": "https://example.org/detectors/comms-loss",
+        "operator": ">=",
+        "threshold": 30
+      },
+      {
+        "name": "UnauthorizedActionAttempt",
+        "description": "Flags any attempted kinetic engagement by the agent.",
+        "uri": "https://example.org/detectors/unauthorized-action",
+        "operator": "==",
+        "threshold": 1
+      }
+    ],
+    "review": {
+      "owner": "defence_safety_governance_board",
+      "cadence_days": 14,
+      "method": "Bi-weekly audit of mission logs, override patterns, spoofing alerts, and deconfliction breaches."
+    }
+  },
+  "kpis_thresholds": {
+    "kpis": [
+      {
+        "id": "KPI-ESC-TIME",
+        "metric": "avg_time_to_authorization_sec",
+        "target": 120,
+        "window": "30d"
+      },
+      {
+        "id": "KPI-OVERRIDE-FREQ",
+        "metric": "operator_override_frequency_pct",
+        "target": 5,
+        "window": "30d"
+      }
+    ],
+    "critical_auto_fail": [
+      "autonomous_lethal_action_detected",
+      "target_designation_without_human_approval",
+      "loss_of_blue_force_data"
+    ]
+  },
+  "change_management": {
+    "approvals": [
+      "Mission Commander",
+      "Safety Officer",
+      "Compliance Auditor"
+    ],
+    "diff_notes": "Initial UAV ISR Mission-Planner policy; enforces human-in-loop constraint, blue-force safety, and GPS integrity.",
+    "rollback_conditions": "Any critical_auto_fail triggered; sustained spoofing detections > 10 in 24h; KPI-ESC-TIME > 2x target for 7d",
+    "backout_plan": "Suspend target proposal actions; revert to manual planning mode; route all authorizations to human-only workflow."
+  },
+  "assurance_mapping": {
+    "nist": ["GOVERN-1", "MAP-1", "MEASURE-1", "MANAGE-1", "MANAGE-3"],
+    "iso_42001": ["ISO42001-4", "ISO42001-8", "ISO42001-9", "ISO42001-10"],
+    "eu_ai_act": ["EUAA-AnnexIV-3", "EUAA-AnnexIV-5", "EUAA-AnnexIV-6", "EUAA-Art72"]
+  },
+  "references": {
+    "documentation": [
+      "https://example.org/runbooks/uav-mission-planner",
+      "https://example.org/audit/defence-autonomy",
+      "https://example.org/playbooks/human-authorization-flow"
+    ],
+    "notes": "Example 5: Defence mission-planning assistant demonstrating enforceable human-in-loop and blue-force safety governance."
+  }
+}
