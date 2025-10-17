@@ -1,0 +1,52 @@
+name: Validate Policy Cards
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - 'schema/**'
+      - 'examples/**'
+      - 'cli/**'
+      - 'docs/crosswalk.*'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/**'
+  pull_request:
+    branches: ["**"]
+    paths:
+      - 'schema/**'
+      - 'examples/**'
+      - 'cli/**'
+      - 'docs/crosswalk.*'
+      - 'package.json'
+      - 'package-lock.json'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate examples (non-strict)
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(examples/*.json)
+          if [ "${files[0]}" = "examples/*.json" ]; then
+            echo "No example JSON files found in examples/; skipping."
+            exit 0
+          fi
+          for f in "${files[@]}"; do
+            echo "Validating $f"
+            npm run validate -- --input "$f" --token-registry docs/crosswalk.tokens.json
+          done

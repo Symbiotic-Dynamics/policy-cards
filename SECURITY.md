@@ -1,5 +1,7 @@
 # Security Policy
 
+Additional Disclaimer: See DISCLAIMER.md — the Materials are not intended or certified for safety-critical or regulatory use.
+
 ## Reporting a vulnerability
 Please email **info@symbioticdynamics.com** with details and a proof of concept
 (if applicable). We will acknowledge receipt as soon as possible.
@@ -11,3 +13,5 @@ added, disclosures related to that code will also be in scope.
 ## Preferred fix process
 - Responsible disclosure with coordinated public notice.
 - Credit to reporters unless you request anonymity.
+
+

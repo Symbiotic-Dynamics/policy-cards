@@ -1,0 +1,83 @@
+{
+  "meta": {
+    "name": "Payments Agent — GB Retail",
+    "version": "0.1.0",
+    "owner": "Payments Risk & Controls",
+    "created_at": "2025-10-17T10:00:00Z",
+    "valid_from": "2025-10-17"
+  },
+  "scope": {
+    "application": "Initiate/check/cancel payments via FPS",
+    "stakeholders": ["end_user", "ops_analyst"],
+    "jurisdictions": ["GB"],
+    "system_refs": ["https://example.org/system-card.pdf"],
+    "model_refs": ["https://example.org/model-card.pdf"]
+  },
+  "applicable_policies": [
+    { "name": "KYC/AML Policy", "jurisdiction": "GB", "citation": "Firm POL-AML-12", "uri": "https://example.org/policies/aml" }
+  ],
+  "controls": {
+    "action_rules": [
+      {
+        "id": "AR-PAY-ALLOW-KYC",
+        "subject": "agent",
+        "action": "initiate_payment",
+        "resource": "payment",
+        "condition": "subject.kyc_status == 'PASS' && subject.risk_score < 0.7",
+        "effect": "allow",
+        "evidence_required": ["kyc_status", "risk_score"]
+      }
+    ]
+  },
+  "obligations": [
+    {
+      "id": "OB-USER-NOTICE",
+      "description": "Display fees and transfer limits prior to confirmation.",
+      "when": "Declare",
+      "responsible_role": "frontend_owner",
+      "evidence_required": ["ui_notice_version"]
+    }
+  ],
+  "monitoring": {
+    "logging": {
+      "events": ["payment_initiated", "payment_denied", "escalation_requested"],
+      "fields": ["kyc_status", "risk_score", "ui_notice_version"],
+      "retention_days": 7
+    },
+    "detectors": [
+      {
+        "name": "HighRiskScore",
+        "description": "Flag high risk score attempts",
+        "uri": "https://example.org/detectors/high-risk",
+        "operator": ">=",
+        "threshold": 0.7
+      }
+    ],
+    "review": {
+      "owner": "controls_review_board",
+      "cadence_days": 14,
+      "method": "bi-weekly committee review"
+    }
+  },
+  "kpis_thresholds": {
+    "kpis": [
+      { "id": "KPI-VIOL-RATE", "metric": "violation_rate", "target": 0.01, "window": "30d" }
+    ],
+    "critical_auto_fail": ["transfer_without_KYC"]
+  },
+  "change_management": {
+    "approvals": ["Head of Risk", "CISO"],
+    "diff_notes": "Initial skeleton.",
+    "rollback_conditions": "Any KPI breach > 3x target",
+    "backout_plan": "Revert to v0.0.0 default-deny rules"
+  },
+  "assurance_mapping": {
+    "nist": ["GOVERN-2", "MANAGE-3"],
+    "iso_42001": ["ISO42001-8", "ISO42001-9"],
+    "eu_ai_act": ["EUAA-Art72"]
+  },
+  "references": {
+    "documentation": ["https://example.org/runbook", "https://example.org/audit-guide"],
+    "notes": "Day-2 trivial example"
+  }
+}

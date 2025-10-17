@@ -1,0 +1,288 @@
+{
+  "$id": "https://example.org/policy-cards/policy-card.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Policy Card",
+  "description": "Deployment-layer, normative, audit-oriented policy for a specific AI system/agent in a defined context/jurisdiction.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "meta",
+    "scope",
+    "applicable_policies",
+    "controls",
+    "obligations",
+    "monitoring",
+    "kpis_thresholds",
+    "change_management",
+    "assurance_mapping",
+    "references"
+  ],
+
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "rfc3339_datetime": { "type": "string", "format": "date-time" },
+    "rfc3339_date": { "type": "string", "format": "date" },
+    "uri": { "type": "string", "format": "uri" },
+    "id_action_rule": { "type": "string", "pattern": "^AR-[A-Z0-9-]+$" },
+    "id_exception": { "type": "string", "pattern": "^EX-[A-Z0-9-]+$" },
+    "time_bound": { "type": "string", "pattern": "^[0-9]+[mhdy]$" },
+    "effect": { "type": "string", "enum": ["allow", "deny", "require_escalation"] },
+    "evidence_field": { "type": "string", "minLength": 1 },
+    "assurance_token": { "type": "string", "minLength": 1 },
+
+    "attribute_expr": {
+      "type": "string",
+      "description": "Human/machine-readable condition (e.g., `subject.risk_score < 0.7 && resource.country == 'GB'`)."
+    },
+
+    "policy_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "jurisdiction"],
+      "properties": {
+        "name": { "type": "string" },
+        "jurisdiction": { "type": "string", "description": "e.g., UK, EU, US-CA" },
+        "citation": { "type": "string", "description": "Short legal/regulatory citation or internal policy code." },
+        "uri": { "$ref": "#/$defs/uri" },
+        "version": { "type": "string" }
+      }
+    },
+
+    "exception": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "reason", "approved_by", "time_bound"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id_exception" },
+        "reason": { "type": "string" },
+        "approved_by": { "type": "string", "description": "Named role or individual." },
+        "time_bound": { "$ref": "#/$defs/time_bound" },
+        "evidence_required": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/evidence_field" }
+        }
+      }
+    },
+
+    "action_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "subject", "action", "resource", "condition", "effect"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id_action_rule" },
+        "subject": { "type": "string", "description": "Actor/role (e.g., agent, sub-agent, user segment)." },
+        "action": { "type": "string", "description": "Operation attempted (e.g., initiate_payment, export_data)." },
+        "resource": { "type": "string", "description": "Object/domain entity (e.g., payment, PHI_record)." },
+        "condition": { "$ref": "#/$defs/attribute_expr" },
+        "effect": { "$ref": "#/$defs/effect" },
+        "evidence_required": {
+          "type": "array",
+          "description": "Names that must appear in monitoring.logging.fields.",
+          "items": { "$ref": "#/$defs/evidence_field" }
+        },
+        "exceptions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/exception" }
+        }
+      }
+    },
+
+    "detector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description", "uri", "operator", "threshold"],
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "uri": { "$ref": "#/$defs/uri", "description": "Pointer to detector impl/spec." },
+        "operator": { "type": "string", "enum": ["<", "<=", "==", ">=", ">"] },
+        "threshold": { "type": "number" }
+      }
+    },
+
+    "kpi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "metric", "target", "window"],
+      "properties": {
+        "id": { "type": "string" },
+        "metric": { "type": "string", "description": "e.g., violation_rate, escalation_sla_pct" },
+        "target": { "type": "number" },
+        "window": { "type": "string", "pattern": "^[0-9]+[mhdy]$" }
+      }
+    }
+  },
+
+  "properties": {
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "owner", "created_at"],
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "$ref": "#/$defs/semver" },
+        "owner": { "type": "string", "description": "Accountable org/role." },
+        "created_at": { "$ref": "#/$defs/rfc3339_datetime" },
+        "last_reviewed_at": { "$ref": "#/$defs/rfc3339_datetime" },
+        "valid_from": { "$ref": "#/$defs/rfc3339_date" },
+        "valid_to": { "$ref": "#/$defs/rfc3339_date" }
+      }
+    },
+
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["application", "stakeholders", "jurisdictions"],
+      "properties": {
+        "application": { "type": "string", "description": "Concrete deployment/context." },
+        "stakeholders": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "jurisdictions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "system_refs": {
+          "type": "array",
+          "description": "Pointers to System Cards, runbooks, DPIAs, etc.",
+          "items": { "$ref": "#/$defs/uri" }
+        },
+        "model_refs": {
+          "type": "array",
+          "description": "Pointers to Model/Data Cards or registries.",
+          "items": { "$ref": "#/$defs/uri" }
+        }
+      }
+    },
+
+    "applicable_policies": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/policy_ref" },
+      "minItems": 0
+    },
+
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action_rules"],
+      "properties": {
+        "action_rules": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/action_rule" },
+          "minItems": 1
+        }
+      }
+    },
+
+    "obligations": {
+      "type": "array",
+      "description": "Must-do commitments (disclosures, consents, record-keeping, user notices, SLAs).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "description", "responsible_role"],
+        "properties": {
+          "id": { "type": "string" },
+          "description": { "type": "string" },
+          "when": { "type": "string", "description": "Trigger/phase (Declare/Do/Audit)." },
+          "responsible_role": { "type": "string" },
+          "evidence_required": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/evidence_field" }
+          },
+          "legal_basis": { "type": "string" }
+        }
+      }
+    },
+
+    "monitoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["logging", "detectors", "review"],
+      "properties": {
+        "logging": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["events", "fields", "retention_days"],
+          "properties": {
+            "events": { "type": "array", "items": { "type": "string" } },
+            "fields": { "type": "array", "items": { "type": "string" } },
+            "retention_days": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "detectors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/detector" },
+          "minItems": 0
+        },
+        "review": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["owner", "cadence_days", "method"],
+          "properties": {
+            "owner": { "type": "string" },
+            "cadence_days": { "type": "integer", "minimum": 1 },
+            "method": { "type": "string", "description": "e.g., weekly committee, automated QA, external audit." }
+          }
+        }
+      }
+    },
+
+    "kpis_thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kpis", "critical_auto_fail"],
+      "properties": {
+        "kpis": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/kpi" },
+          "minItems": 0
+        },
+        "critical_auto_fail": {
+          "type": "array",
+          "description": "Domain-specific red lines; at least one must be present.",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        }
+      }
+    },
+
+    "change_management": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvals", "backout_plan"],
+      "properties": {
+        "approvals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Roles/boards required to approve changes."
+        },
+        "diff_notes": { "type": "string", "description": "Human summary of diffs since previous version." },
+        "rollback_conditions": { "type": "string" },
+        "backout_plan": { "type": "string" }
+      }
+    },
+
+    "assurance_mapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nist", "iso_42001", "eu_ai_act"],
+      "properties": {
+        "nist": { "type": "array", "items": { "$ref": "#/$defs/assurance_token" }, "minItems": 1 },
+        "iso_42001": { "type": "array", "items": { "$ref": "#/$defs/assurance_token" }, "minItems": 1 },
+        "eu_ai_act": { "type": "array", "items": { "$ref": "#/$defs/assurance_token" }, "minItems": 1 }
+      }
+    },
+
+    "references": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["documentation"],
+      "properties": {
+        "documentation": { "type": "array", "items": { "$ref": "#/$defs/uri" } },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}

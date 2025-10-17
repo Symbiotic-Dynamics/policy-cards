@@ -5,3 +5,5 @@ under **CC0 1.0 Universal**. You may copy, modify, and embed it without attribut
 
 We appreciate a citation to the Policy Cards paper and the Zenodo record if you
 use the schema in your software or documentation.
+
+Additional Disclaimer: See DISCLAIMER.md — the Materials are not intended or certified for safety-critical or regulatory use.
