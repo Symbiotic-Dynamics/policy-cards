@@ -1,0 +1,242 @@
+{
+  "meta": {
+    "name": "Retail Banking — Payments Agent (GB/FPS)",
+    "version": "0.1.0",
+    "owner": "Payments Risk & Controls",
+    "created_at": "2025-10-17T10:30:00Z",
+    "valid_from": "2025-10-17"
+  },
+  "scope": {
+    "application": "Initiate/check/cancel Faster Payments transfers in a UK retail banking app",
+    "stakeholders": ["end_user", "agent", "ops_analyst", "risk_team", "compliance_officer"],
+    "jurisdictions": ["GB"],
+    "system_refs": ["https://example.org/system-card/payments-agent.pdf"],
+    "model_refs": ["https://example.org/model-card/risk-scoring-model.pdf"]
+  },
+  "applicable_policies": [
+    {
+      "name": "Firm KYC/AML Policy",
+      "jurisdiction": "GB",
+      "citation": "POL-AML-12",
+      "uri": "https://example.org/policies/kyc-aml"
+    },
+    {
+      "name": "Faster Payments Scheme Rules (internal interpretation)",
+      "jurisdiction": "GB",
+      "citation": "FPS-RULES-INTERP-2025",
+      "uri": "https://example.org/policies/fps"
+    }
+  ],
+  "controls": {
+    "action_rules": [
+      {
+        "id": "AR-PAY-ALLOW-LOWRISK",
+        "subject": "agent",
+        "action": "initiate_payment",
+        "resource": "payment",
+        "condition": "kyc_status == 'PASS' && risk_score < 0.70 && device_trust_level >= 0.5 && sanctions_hit == false && amount <= 2000 && first_time_payee == false",
+        "effect": "allow",
+        "evidence_required": [
+          "kyc_status",
+          "risk_score",
+          "device_trust_level",
+          "sanctions_hit",
+          "amount",
+          "currency",
+          "first_time_payee"
+        ]
+      },
+      {
+        "id": "AR-PAY-ESCALATE-HIGHRISK",
+        "subject": "agent",
+        "action": "initiate_payment",
+        "resource": "payment",
+        "condition": "risk_score >= 0.70 || (first_time_payee == true && amount >= 1000) || device_trust_level < 0.5 || geo_mismatch == true || (beneficiary_screening_score >= 0.6 && beneficiary_screening_score < 0.8)",
+        "effect": "require_escalation",
+        "evidence_required": [
+          "risk_score",
+          "first_time_payee",
+          "amount",
+          "device_trust_level",
+          "geo_mismatch",
+          "beneficiary_screening_score",
+          "escalation_id"
+        ],
+        "exceptions": [
+          {
+            "id": "EX-PAY-PAYROLL-EMERGENCY",
+            "reason": "Employer payroll run with stranded beneficiaries; customer verified by phone",
+            "approved_by": "Head of Operations",
+            "time_bound": "24h",
+            "evidence_required": ["two_person_approval_id", "manual_callback_reference"]
+          }
+        ]
+      },
+      {
+        "id": "AR-PAY-DENY-REDLINES",
+        "subject": "agent",
+        "action": "initiate_payment",
+        "resource": "payment",
+        "condition": "kyc_status != 'PASS' || sanctions_hit == true || mule_account_flag == true || tamper_check_failed == true",
+        "effect": "deny",
+        "evidence_required": [
+          "kyc_status",
+          "sanctions_hit",
+          "mule_account_flag",
+          "tamper_check_failed"
+        ]
+      }
+    ]
+  },
+  "obligations": [
+    {
+      "id": "OB-USER-NOTICE-FEES-LIMITS",
+      "description": "Display fees, transfer limits, and risk notice prior to confirmation.",
+      "when": "Declare",
+      "responsible_role": "frontend_owner",
+      "evidence_required": ["ui_notice_version", "notice_displayed_timestamp"]
+    },
+    {
+      "id": "OB-RECORD-CONSENT",
+      "description": "Record explicit user confirmation of payee details and amount.",
+      "when": "Do",
+      "responsible_role": "frontend_owner",
+      "evidence_required": ["consent_version", "consent_timestamp"]
+    },
+    {
+      "id": "OB-ESCALATION-PROTOCOL",
+      "description": "Route escalations to the risk queue; perform call-back verification for amounts ≥ £1,000 to first-time payees.",
+      "when": "Do",
+      "responsible_role": "risk_team",
+      "evidence_required": ["escalation_id", "manual_callback_reference", "two_person_approval_id"],
+      "legal_basis": "Fraud/AML prevention"
+    },
+    {
+      "id": "OB-AUDIT-TRAIL",
+      "description": "Maintain audit trail for all allow/deny/escalate decisions with rule IDs and detector outputs.",
+      "when": "Audit",
+      "responsible_role": "ops_analyst",
+      "evidence_required": ["action_rule_id", "detector_snapshots_uri"]
+    }
+  ],
+  "monitoring": {
+    "logging": {
+      "events": [
+        "payment_initiated",
+        "payment_denied",
+        "escalation_requested",
+        "escalation_resolved"
+      ],
+      "fields": [
+        "action_rule_id",
+        "amount",
+        "currency",
+        "beneficiary_iban",
+        "beneficiary_screening_score",
+        "consent_timestamp",
+        "consent_version",
+        "device_id",
+        "device_trust_level",
+        "detector_snapshots_uri",
+        "escalation_id",
+        "first_time_payee",
+        "geo_mismatch",
+        "ip_geo_country",
+        "kyc_status",
+        "manual_callback_reference",
+        "mule_account_flag",
+        "notice_displayed_timestamp",
+        "registered_country",
+        "risk_score",
+        "sanctions_hit",
+        "tamper_check_failed",
+        "two_person_approval_id",
+        "ui_notice_version",
+        "velocity_1h"
+      ],
+      "retention_days": 90
+    },
+    "detectors": [
+      {
+        "name": "HighRiskScore",
+        "description": "Flags attempts where overall risk score is high.",
+        "uri": "https://example.org/detectors/high-risk",
+        "operator": ">=",
+        "threshold": 0.7
+      },
+      {
+        "name": "VelocitySpike",
+        "description": "Flags unusual transfer frequency within one hour.",
+        "uri": "https://example.org/detectors/velocity-1h",
+        "operator": ">",
+        "threshold": 3
+      },
+      {
+        "name": "GeoMismatch",
+        "description": "Flags mismatch between IP geolocation and registered country.",
+        "uri": "https://example.org/detectors/geo-mismatch",
+        "operator": "==",
+        "threshold": 1
+      },
+      {
+        "name": "SanctionsSoftMatchLowerBound",
+        "description": "Lower bound for soft sanctions fuzzy match.",
+        "uri": "https://example.org/detectors/sanctions-softmatch",
+        "operator": ">=",
+        "threshold": 0.6
+      },
+      {
+        "name": "SanctionsSoftMatchUpperBound",
+        "description": "Upper bound for soft sanctions fuzzy match.",
+        "uri": "https://example.org/detectors/sanctions-softmatch",
+        "operator": "<",
+        "threshold": 0.8
+      }
+    ],
+    "review": {
+      "owner": "controls_review_board",
+      "cadence_days": 14,
+      "method": "Bi-weekly committee review of detector performance, false positives, and escalations."
+    }
+  },
+  "kpis_thresholds": {
+    "kpis": [
+      {
+        "id": "KPI-VIOL-RATE",
+        "metric": "violation_rate",
+        "target": 0.01,
+        "window": "30d"
+      },
+      {
+        "id": "KPI-ESC-SLA",
+        "metric": "escalation_sla_pct",
+        "target": 95,
+        "window": "30d"
+      }
+    ],
+    "critical_auto_fail": [
+      "transfer_without_KYC",
+      "transfer_to_sanctioned_party",
+      "override_without_two_person_approval"
+    ]
+  },
+  "change_management": {
+    "approvals": ["Head of Risk", "CISO", "Compliance Officer"],
+    "diff_notes": "Initial retail banking policy card.",
+    "rollback_conditions": "KPI-VIOL-RATE > 3x target or detector precision < 70% for 7d",
+    "backout_plan": "Immediately disable AR-PAY-ALLOW-LOWRISK; set default deny and require manual approvals for all first-time payees ≥ £1,000."
+  },
+  "assurance_mapping": {
+    "nist": ["GOVERN-1", "MAP-1", "MEASURE-1", "MANAGE-1", "MANAGE-3"],
+    "iso_42001": ["ISO42001-4", "ISO42001-8", "ISO42001-9", "ISO42001-10"],
+    "eu_ai_act": ["EUAA-AnnexIV-3", "EUAA-AnnexIV-4", "EUAA-AnnexIV-6", "EUAA-AnnexIV-9", "EUAA-Art72"]
+  },
+  "references": {
+    "documentation": [
+      "https://example.org/runbooks/payments-agent",
+      "https://example.org/audit/guide",
+      "https://example.org/playbooks/escalation"
+    ],
+    "notes": "Retail banking example: First-time high-value transfer on a new device."
+  }
+}
