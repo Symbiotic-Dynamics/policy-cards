@@ -14,7 +14,7 @@ Top-level sections: `meta`, `scope`, `applicable_policies`, `controls`, `obligat
 
 ## 3. Evidence & Monitoring
 - `evidence_required` names MUST be present in `monitoring.logging.fields`.
-- Minimums: `monitoring.logging.retention_days >= 1`; `monitoring.review.cadence_days >= 7`.
+- Minimums: `monitoring.logging.retention_days >= 1`; `monitoring.review.cadence_days >= 1`.
 - Detectors MUST include numeric thresholds and a `uri` stub to their definition.
 
 ## 4. KPIs & Criticals

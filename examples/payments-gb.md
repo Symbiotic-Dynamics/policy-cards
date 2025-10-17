@@ -51,9 +51,9 @@
 - **Backout plan:** Revert to v0.0.0 default-deny rules
 
 ## 8) Assurance Mapping
-- **NIST AI RMF:** `Govern.2`, `Manage.3`
-- **ISO/IEC 42001:** `Operation-8.1`, `Performance-9.1`
-- **EU AI Act:** `AnnexIV-2`, `Art72-PMM`
+- **NIST AI RMF:** `GOVERN-2`, `MANAGE-3`
+- **ISO/IEC 42001:** `ISO42001-8`, `ISO42001-9`
+- **EU AI Act:** `EUAA-Art72`
 
 ## 9) References
 - Docs: [link](https://example.org/runbook), [link](https://example.org/audit-guide)

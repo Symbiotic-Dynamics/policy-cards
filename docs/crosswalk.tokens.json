@@ -1,0 +1,41 @@
+{
+  "title": "Policy Card Assurance Token Registry",
+  "description": "Canonical tokens allowed in assurance_mapping for NIST AI RMF, ISO/IEC 42001, and EU AI Act.",
+  "version": "1.0.0",
+  "registry": {
+    "nist": [
+      "GOVERN-1",
+      "GOVERN-2",
+      "MAP-1",
+      "MEASURE-1",
+      "MEASURE-2",
+      "MANAGE-1",
+      "MANAGE-2",
+      "MANAGE-3"
+    ],
+    "iso_42001": [
+      "ISO42001-4",
+      "ISO42001-5",
+      "ISO42001-6",
+      "ISO42001-7",
+      "ISO42001-8",
+      "ISO42001-9",
+      "ISO42001-10"
+    ],
+    "eu_ai_act": [
+      "EUAA-AnnexIV-1",
+      "EUAA-AnnexIV-3",
+      "EUAA-AnnexIV-4",
+      "EUAA-AnnexIV-5",
+      "EUAA-AnnexIV-6",
+      "EUAA-AnnexIV-7",
+      "EUAA-AnnexIV-8",
+      "EUAA-AnnexIV-9",
+      "EUAA-Art72"
+    ]
+  },
+  "notes": [
+    "Annex IV §2 is intentionally not tokenized for Policy Cards (belongs to System/Model layer).",
+    "Tokens are case-sensitive; examples should use exactly these strings."
+  ]
+}

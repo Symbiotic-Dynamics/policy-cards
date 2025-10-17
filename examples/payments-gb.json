@@ -72,9 +72,9 @@
     "backout_plan": "Revert to v0.0.0 default-deny rules"
   },
   "assurance_mapping": {
-    "nist": ["Govern.2", "Manage.3"],
-    "iso_42001": ["Operation-8.1", "Performance-9.1"],
-    "eu_ai_act": ["AnnexIV-2", "Art72-PMM"]
+    "nist": ["GOVERN-2", "MANAGE-3"],
+    "iso_42001": ["ISO42001-8", "ISO42001-9"],
+    "eu_ai_act": ["EUAA-Art72"]
   },
   "references": {
     "documentation": ["https://example.org/runbook", "https://example.org/audit-guide"],

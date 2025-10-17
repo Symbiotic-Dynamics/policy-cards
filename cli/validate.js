@@ -105,6 +105,11 @@ async function main() {
       default: path.join('schema', 'policy-card.schema.json'),
       describe: 'Path to Policy Card JSON Schema'
     })
+    .option('token-registry', {
+      type: 'string',
+      default: path.join('docs', 'crosswalk.tokens.json'),
+      describe: 'Path to assurance token registry JSON (to lint assurance_mapping tokens)'
+    })
     .option('input', {
       type: 'string',
       demandOption: true,
@@ -119,6 +124,7 @@ async function main() {
     .argv;
 
   const schemaPath = argv.schema;
+  const tokenRegistryPath = argv['token-registry'];
   const inputPath = argv.input;
 
   // Load schema & card JSON
@@ -143,6 +149,35 @@ async function main() {
     ...lintEvidenceAlignment(card),
     ...lintRetentionVsCadence(card)
   ];
+
+  // Token registry lint: ensure assurance_mapping tokens are in registry
+  try {
+    if (tokenRegistryPath) {
+      const registryJson = loadJson(tokenRegistryPath);
+      if (registryJson && registryJson.registry && typeof registryJson.registry === 'object') {
+        const reg = registryJson.registry;
+        const sets = {
+          nist: new Set(Array.isArray(reg.nist) ? reg.nist : []),
+          iso_42001: new Set(Array.isArray(reg.iso_42001) ? reg.iso_42001 : []),
+          eu_ai_act: new Set(Array.isArray(reg.eu_ai_act) ? reg.eu_ai_act : [])
+        };
+        const am = card.assurance_mapping || {};
+        const categories = ['nist', 'iso_42001', 'eu_ai_act'];
+        for (const cat of categories) {
+          const arr = Array.isArray(am[cat]) ? am[cat] : [];
+          arr.forEach((tok, i) => {
+            if (!sets[cat].has(tok)) {
+              lintWarnings.push(`assurance_mapping.${cat}[${i}] token '${tok}' not found in registry (${tokenRegistryPath})`);
+            }
+          });
+        }
+      } else {
+        console.warn(`Token registry at ${tokenRegistryPath} is missing 'registry' field; skipping token lint.`);
+      }
+    }
+  } catch (e) {
+    console.warn(`Could not read token registry at ${tokenRegistryPath}: ${e.message}. Skipping token lint.`);
+  }
 
   // Report
   if (!valid) {
