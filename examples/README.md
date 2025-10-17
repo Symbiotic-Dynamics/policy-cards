@@ -4,7 +4,7 @@ This folder contains validated example Policy Cards for multiple domains.
 Each example passes the repository’s validator and follows the
 authoring template in `docs/templates/policy-card.md.hbs`.
 
-> Additional Disclaimer: See DISCLAIMER.md — the Materials are not intended or certified for safety-critical or regulatory use. No affiliation, approval, or endorsement by NIST, ISO/IEC, the European Union, NHS, MHRA, or any regulator or institution is implied by references to their frameworks or tokens. These are just ficticious examples.
+> Additional Disclaimer: See DISCLAIMER.md — the Materials are not intended or certified for safety-critical or regulatory use. No affiliation, approval, or endorsement by NIST, ISO/IEC, the European Union, NHS, MHRA, or any regulator or institution is implied by references to their frameworks or tokens. These are just fictitious examples; no real patient, financial, or operational data is included.
 
 # Example Index
 
@@ -73,7 +73,7 @@ Its Policy Card defines strict decision boundaries:
 Each decision produces structured **evidence**, `vitals`, `risk_level`, `confidence_score`, and `triage_category`; logged under NHS Data Security and Protection Toolkit (DSPT) guidance.  
 **Detectors** monitor missing vitals, low confidence, bias drift, and data-collection failures.  
 **Obligations** require human-clinician review, call-back verification, and model-version logging.  
-**KPIs** track average triage-to-clinician handover time and escalation accuracy, while assurance mappings reference **ISO 13485**, **ISO 14971**, **NHS DSPT**, and the **EU AI Act (Annex VIII)**.
+**KPIs** track average triage-to-clinician handover time and escalation accuracy, while assurance mappings reference **ISO 13485**, **ISO 14971**, **NHS DSPT**, and the **EU AI Act (Annex IV & Art 72)**.
 
 Together, these mechanisms form a **live compliance boundary**; a safety layer that tells the triage agent exactly **what it must not break**, ensuring that clinical autonomy never exceeds certified human oversight.
 

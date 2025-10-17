@@ -15,7 +15,7 @@
       "risk_officer",
       "data_protection_officer"
     ],
-    "jurisdictions": ["GB"],
+  "jurisdictions": ["GB"],
     "system_refs": [
       "https://example.org/system-card/clinical-triage-agent.pdf"
     ],

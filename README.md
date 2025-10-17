@@ -14,7 +14,8 @@ This repository hosts the **open specification and artifacts**:
 > This repository is provided for research and illustrative purposes only.  
 > It is **not certified or warranted for use in any operational, medical, financial, or safety-critical system**.  
 > No liability is accepted for any loss, damage, or consequences arising from its use.  
-> No affiliation, approval, or endorsement by NIST, ISO/IEC, the European Union, or any regulator is implied by references to their frameworks or tokens.  
+> No affiliation, approval, or endorsement by NIST, ISO/IEC, the European Union, or any regulator or institution is implied by references to their frameworks or tokens. 
+> All examples mentioned are fictitious.  
 > See [DISCLAIMER.md](./DISCLAIMER.md) for full terms.
 
 
