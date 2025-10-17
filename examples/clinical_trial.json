@@ -1,0 +1,290 @@
+{
+  "meta": {
+    "name": "Healthcare — Multi-Agent Clinical Trial Coordinator (Trial Orchestration Agent)",
+    "version": "0.1.0",
+    "owner": "Sponsor Quality Office & DSMB Secretariat",
+    "created_at": "2025-10-17T11:30:00Z",
+    "valid_from": "2025-10-17"
+  },
+  "scope": {
+    "application": "Federated Phase III oncology trial coordination across UK/DE/CA sites; orchestrates anonymised endpoint exchange and compliance workflows among site agents, ethics/DSMB agents, and sponsor QA.",
+    "stakeholders": [
+      "participant",
+      "site_investigator",
+      "ethics_board_member",
+      "dsmb_member",
+      "sponsor_quality_manager",
+      "data_protection_officer"
+    ],
+    "jurisdictions": ["GB", "DE", "CA"],
+    "system_refs": [
+      "https://example.org/system-card/trial-orchestration-agent.pdf"
+    ],
+    "model_refs": [
+      "https://example.org/model-card/endpoint-aggregation-model.pdf"
+    ]
+  },
+  "applicable_policies": [
+    {
+      "name": "GDPR — International transfers (SCCs/adequacy)",
+      "jurisdiction": "EU",
+      "citation": "GDPR Art. 44-49",
+      "uri": "https://gdpr.eu/article-44-gdpr/"
+    },
+    {
+      "name": "UK GDPR & DPA 2018 — Research & health data",
+      "jurisdiction": "GB",
+      "citation": "UK GDPR; DPA 2018",
+      "uri": "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/"
+    },
+    {
+      "name": "Germany - BDSG & Länder research provisions",
+      "jurisdiction": "DE",
+      "citation": "BDSG",
+      "uri": "https://www.gesetze-im-internet.de/bdsg_2018/"
+    },
+    {
+      "name": "Canada - PIPEDA/PHIPA (site dependent)",
+      "jurisdiction": "CA",
+      "citation": "PIPEDA; PHIPA (ON)",
+      "uri": "https://www.priv.gc.ca/en/privacy-topics/privacy-laws-in-canada/"
+    },
+    {
+      "name": "ICH Good Clinical Practice (E6(R2))",
+      "jurisdiction": "International",
+      "citation": "ICH E6(R2)",
+      "uri": "https://www.ich.org/page/efficacy-guidelines"
+    },
+    {
+      "name": "EU AI Act — Technical documentation & PMM",
+      "jurisdiction": "EU",
+      "citation": "Annex IV; Article 72",
+      "uri": "https://artificial-intelligence.europa.eu/ai-act_en"
+    }
+  ],
+  "controls": {
+    "action_rules": [
+      {
+        "id": "AR-TRIAL-ALLOW-ANON-METRICS",
+        "subject": "agent",
+        "action": "exchange_metrics",
+        "resource": "aggregated_endpoints",
+        "condition": "phi_present == false && consent_token_valid == true && protocol_version_locked == true && jurisdiction_permitted == true",
+        "effect": "allow",
+        "evidence_required": [
+          "phi_present",
+          "consent_token_id",
+          "consent_token_valid",
+          "protocol_version",
+          "protocol_version_locked",
+          "jurisdiction_code",
+          "transfer_request_id",
+          "dataset_lineage_uri"
+        ]
+      },
+      {
+        "id": "AR-TRIAL-ESCALATE-CROSSBORDER",
+        "subject": "agent",
+        "action": "request_data_transfer",
+        "resource": "deidentified_dataset_export",
+        "condition": "((cross_border == true) && (adequacy_status == false) && (scc_basis == false)) || schema_drift == true || adverse_event_grade >= 3 || consent_token_valid == false",
+        "effect": "require_escalation",
+        "evidence_required": [
+          "cross_border",
+          "adequacy_status",
+          "scc_basis",
+          "schema_drift",
+          "adverse_event_grade",
+          "consent_token_id",
+          "consent_token_valid",
+          "transfer_request_id",
+          "jurisdiction_code",
+          "escalation_id"
+        ],
+        "exceptions": [
+          {
+            "id": "EX-TRIAL-SAE-EMERGENCY-DATAFLOW",
+            "reason": "Serious adverse event (SAE) requires immediate DSMB access; emergency dataflow of minimal necessary fields.",
+            "approved_by": "DSMB Chair",
+            "time_bound": "24h",
+            "evidence_required": [
+              "dsmb_ticket_id",
+              "two_person_approval_id",
+              "minimal_dataset_manifest_uri"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "AR-TRIAL-DENY-IDENTIFIABLE",
+        "subject": "agent",
+        "action": "access_identifiable_data",
+        "resource": "participant_record",
+        "condition": "true",
+        "effect": "deny",
+        "evidence_required": [
+          "attempted_action",
+          "site_id",
+          "jurisdiction_code"
+        ]
+      }
+    ]
+  },
+  "obligations": [
+    {
+      "id": "OB-DSMB-REVIEW-SAE",
+      "description": "DSMB must review SAE of CTCAE grade ≥ 3 within 24 hours of notification.",
+      "when": "Do",
+      "responsible_role": "dsmb_member",
+      "evidence_required": [
+        "adverse_event_grade",
+        "dsmb_ticket_id",
+        "review_timestamp"
+      ]
+    },
+    {
+      "id": "OB-CRYPTO-SIGN-EXPORTS",
+      "description": "All dataset exports must be cryptographically signed and include immutable lineage pointers.",
+      "when": "Audit",
+      "responsible_role": "sponsor_quality_manager",
+      "evidence_required": [
+        "export_signature_id",
+        "dataset_lineage_uri",
+        "transfer_request_id"
+      ]
+    },
+    {
+      "id": "OB-CONSENT-VERIFICATION",
+      "description": "Verify consent token validity for each subject before any data egress.",
+      "when": "Declare",
+      "responsible_role": "site_investigator",
+      "evidence_required": [
+        "consent_token_id",
+        "consent_token_valid",
+        "consent_last_checked_at"
+      ]
+    }
+  ],
+  "monitoring": {
+    "logging": {
+      "events": [
+        "data_ingested",
+        "consent_verified",
+        "data_export_requested",
+        "data_export_approved",
+        "data_export_denied",
+        "adverse_event_reported",
+        "dsmb_review_completed",
+        "protocol_deviation_detected",
+        "exception_approved"
+      ],
+      "fields": [
+        "action_rule_id",
+        "adequacy_status",
+        "adverse_event_grade",
+        "attempted_action",
+        "callback_reference",
+        "consent_last_checked_at",
+        "consent_token_id",
+        "consent_token_valid",
+        "cross_border",
+        "dataset_lineage_uri",
+        "dicom_series_hash",
+        "dsmb_ticket_id",
+        "escalation_id",
+        "export_signature_id",
+        "jurisdiction_code",
+        "minimal_dataset_manifest_uri",
+        "phi_present",
+        "protocol_version",
+        "protocol_version_locked",
+        "schema_drift",
+        "scc_basis",
+        "site_id",
+        "transfer_request_id",
+        "two_person_approval_id",
+        "review_timestamp"
+      ],
+      "retention_days": 365
+    },
+    "detectors": [
+      {
+        "name": "ConsentRevoked",
+        "description": "Flags subjects whose consent token was revoked or expired.",
+        "uri": "https://example.org/detectors/consent-revoked",
+        "operator": "==",
+        "threshold": 1
+      },
+      {
+        "name": "CrossBorderAnomaly",
+        "description": "Flags cross-border transfers lacking adequacy or SCC basis.",
+        "uri": "https://example.org/detectors/cross-border-anomaly",
+        "operator": "==",
+        "threshold": 1
+      },
+      {
+        "name": "ProtocolDeviationSpike",
+        "description": "Flags spikes in protocol deviations beyond baseline.",
+        "uri": "https://example.org/detectors/protocol-deviation-spike",
+        "operator": ">=",
+        "threshold": 5
+      },
+      {
+        "name": "SAESeverityHigh",
+        "description": "Flags serious adverse events of CTCAE grade ≥ 3.",
+        "uri": "https://example.org/detectors/sae-severity-high",
+        "operator": ">=",
+        "threshold": 3
+      }
+    ],
+    "review": {
+      "owner": "trial_governance_board",
+      "cadence_days": 14,
+      "method": "Bi-weekly multi-agent governance review (DSMB, Ethics, Sponsor QA): transfers, SAEs, consent revocations, protocol deviations."
+    }
+  },
+  "kpis_thresholds": {
+    "kpis": [
+      {
+        "id": "KPI-DATA-LATENCY-P95",
+        "metric": "data_sharing_latency_p95_sec",
+        "target": 3600,
+        "window": "30d"
+      },
+      {
+        "id": "KPI-DSMB-24H",
+        "metric": "dsmb_review_within_24h_pct",
+        "target": 99,
+        "window": "30d"
+      }
+    ],
+    "critical_auto_fail": [
+      "export_identifiable_data",
+      "transfer_without_valid_consent",
+      "cross_border_without_adequacy_or_SCCs"
+    ]
+  },
+  "change_management": {
+    "approvals": [
+      "Trial Steering Committee",
+      "DSMB Chair",
+      "Data Protection Officer"
+    ],
+    "diff_notes": "Initial multi-agent orchestration card; introduces cross-border consent checks, SAE fast-lane, cryptographic export signing.",
+    "rollback_conditions": "Any critical_auto_fail observed; KPI-DSMB-24H < 95 for 7d; sustained ProtocolDeviationSpike >= 10 for 48h",
+    "backout_plan": "Suspend cross-border exports; restrict agents to site-local aggregation; route all SAE data to DSMB via manual process; freeze protocol_version until corrective CAPA closes."
+  },
+  "assurance_mapping": {
+    "nist": ["GOVERN-1", "MAP-1", "MEASURE-1", "MANAGE-1", "MANAGE-3"],
+    "iso_42001": ["ISO42001-4", "ISO42001-8", "ISO42001-9", "ISO42001-10"],
+    "eu_ai_act": ["EUAA-AnnexIV-3", "EUAA-AnnexIV-4", "EUAA-AnnexIV-5", "EUAA-AnnexIV-6", "EUAA-AnnexIV-9", "EUAA-Art72"]
+  },
+  "references": {
+    "documentation": [
+      "https://example.org/runbooks/trial-orchestration",
+      "https://example.org/audit/trial-governance",
+      "https://example.org/playbooks/dsmb-escalation"
+    ],
+    "notes": "Example 4 multi-agent scenario: federated clinical trial coordination with jurisdictional controls and collective assurance."
+  }
+}

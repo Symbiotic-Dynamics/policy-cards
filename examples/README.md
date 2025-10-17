@@ -92,3 +92,32 @@ It exemplifies how future diagnostic systems can achieve autonomy *without overs
 [View the full Policy Card JSON →](diagnostic_copilot.json)
 
 
+## Example 4 — Multi-Agent Clinical Trial Coordinator
+
+> *Distributed intelligence under shared regulatory control.*
+
+This example demonstrates how **multiple Policy-governed agents** coordinate a federated clinical trial, sharing data and decisions across jurisdictions while maintaining traceability, patient privacy, and regulatory compliance.
+
+### Scenario
+
+A global Phase III oncology trial runs across hospitals in the UK, Germany, and Canada.  
+Each site operates its own **Clinical Data Agent** responsible for ingesting patient observations, de-identifying records, and synchronising endpoints with a central **Trial Orchestration Agent**.  
+Additional agents represent the Ethics Board, Data Safety Monitoring Board (DSMB), and Sponsor Quality Office, each enforcing their own Policy Cards and assurance mappings.
+
+The network’s governance logic is explicit:
+
+* **ALLOW**: exchange of anonymised efficacy metrics and protocol-approved parameters within designated jurisdictional nodes.  
+* **REQUIRE ESCALATION**: when cross-border data transfer lacks a recorded consent token, when schema drift or endpoint anomalies occur, or when an adverse-event severity score ≥ 3 (CTCAE) is reported.  
+* **DENY**: any agent-initiated access to identifiable patient data or analysis of subjects outside its legal jurisdiction.
+
+Each agent logs structured **evidence**, `consent_token_id`, `jurisdiction_code`, `dataset_lineage_uri`, `adverse_event_grade`, `transfer_request_id`, and `review_timestamp`, into a shared, append-only audit ledger.  
+**Detectors** monitor consent revocations, cross-border data flow anomalies, and protocol-deviation spikes.  
+**Obligations** enforce DSMB review within 24 hours of serious adverse events, cryptographic signing of dataset exports, and version-locked protocol adherence.  
+**KPIs** track data-sharing latency and review compliance across all agents.
+
+This vignette showcases the **multi-agent extension of the Policy Card methodology**: individual autonomy bounded by local law, and collective assurance achieved through linked evidence and cross-referenced obligations.  
+The result is a system where every agent knows not only *what it may do*, but *what its peers are entitled to expect*. The result is a distributed governance fabric for trustworthy collaborative AI in clinical research.
+
+[View the full Policy Card Markdown →](clinical_trial.md)  
+[View the full Policy Card JSON →](clinical_trial.json)
+
