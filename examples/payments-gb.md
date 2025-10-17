@@ -1,3 +1,6 @@
+
+> Important: Research/illustration only; not certified or warranted for operational, medical, financial, or safety-critical use. No endorsement by NIST, ISO/IEC, the European Union, or any regulator is implied. See DISCLAIMER.md for full terms.
+
 # Payments Agent — GB Retail — Policy Card (v0.1.0)
 
 **Owner:** Payments Risk &amp; Controls  

@@ -8,3 +8,5 @@ Planned examples:
 - Retail banking (payments agent)
 - Clinical triage (sandbox)
 - Defence (UAV mission-planning)
+
+Additional Disclaimer: See DISCLAIMER.md — the Materials are not intended or certified for safety-critical or regulatory use.

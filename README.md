@@ -4,11 +4,20 @@
 the operational rules, obligations, exceptions, evidence, and assurance mappings
 that a deployed AI system or agent must satisfy in a given context.
 
-> This repository hosts the **open specification and artifacts**:
-> - JSON Schema (2020-12)
-> - Examples (multiple domains)
-> - Crosswalk to NIST AI RMF / ISO/IEC 42001 / EU AI Act
-> - Authoring template and specs notes
+This repository hosts the **open specification and artifacts**:
+ - AI Policy Card JSON Schema (2020-12)
+ - Examples (multiple domains)
+ - Crosswalk to NIST AI RMF / ISO/IEC 42001 / EU AI Act
+ - Authoring template and specs notes
+
+> ⚠️ **Important Legal Notice**  
+> This repository is provided for research and illustrative purposes only.  
+> It is **not certified or warranted for use in any operational, medical, financial, or safety-critical system**.  
+> No liability is accepted for any loss, damage, or consequences arising from its use.  
+> No affiliation, approval, or endorsement by NIST, ISO/IEC, the European Union, or any regulator is implied by references to their frameworks or tokens.  
+> See [DISCLAIMER.md](./DISCLAIMER.md) for full terms.
+
+
 
 ## Status
 This repository starts **private** and will become **public** at the time of the
@@ -23,6 +32,10 @@ initial paper preprint release.
 ## How to cite
 - **Primary (concept):** the Policy Cards paper (arXiv: TBA)
 - **Artifacts (schema/examples):** Zenodo concept DOI (TBA) and version DOI per release
+
+
+
+
 
 ## Structure
 - `schema/` — JSON Schema (CC0-1.0) and notes

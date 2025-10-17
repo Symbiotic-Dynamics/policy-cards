@@ -1,3 +1,6 @@
+<!-- DISCLAIMER: Research/illustration only; not for operational use. 
+See repository root DISCLAIMER.md for full terms. -->
+
 # Policy Card — Specification Notes (v1, skeleton)
 
 ## 0. Purpose & Positioning

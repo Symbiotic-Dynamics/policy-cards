@@ -2,6 +2,9 @@
 'use strict';
 
 // Renderer CLI for Policy Cards
+// 
+// DISCLAIMER: Provided for research illustration only; not for operational use. See DISCLAIMER.md.
+// 
 // - Calls the validator CLI first (schema + lints)
 // - If validation succeeds, renders Markdown using Handlebars template
 // Usage:

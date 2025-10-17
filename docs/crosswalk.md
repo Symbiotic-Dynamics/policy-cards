@@ -1,3 +1,6 @@
+<!-- DISCLAIMER: Research/illustration only; not for operational use. 
+See repository root DISCLAIMER.md for full terms. -->
+
 # Crosswalk: Policy Card → NIST AI RMF / ISO/IEC 42001 / EU AI Act
 
 This document provides:

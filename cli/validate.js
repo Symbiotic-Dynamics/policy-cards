@@ -2,6 +2,9 @@
 'use strict';
 
 // Minimal professional validator for Policy Cards (JSON Schema 2020-12)
+// 
+// DISCLAIMER: Provided for research illustration only; not for operational use. See DISCLAIMER.md.
+// 
 // - Validates JSON against schema using Ajv + formats
 // - Lints: evidence fields alignment; retention vs cadence warning
 // Usage:
