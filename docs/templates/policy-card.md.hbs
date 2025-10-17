@@ -27,7 +27,7 @@
 - **{{id}}** — *{{effect}}*  
   - Subject: `{{subject}}`  
   - Action: `{{action}}`, Resource: `{{resource}}`  
-  - Condition: `{{condition}}`  
+  - Condition: `{{{condition}}}`  
   - Evidence required: {{#if evidence_required}}{{#each evidence_required}}`{{this}}`{{#unless @last}}, {{/unless}}{{/each}}{{else}}None{{/if}}  
   - Exceptions: {{#if exceptions}}{{#each exceptions}}`{{id}}` ({{time_bound}}) by {{approved_by}}{{#unless @last}}; {{/unless}}{{/each}}{{else}}None{{/if}}
 {{/each}}

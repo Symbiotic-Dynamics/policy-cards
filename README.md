@@ -63,3 +63,40 @@ Options:
 
 On success: prints `Validation OK for <file>`.
 On schema errors: prints detailed messages and exits non‑zero.
+
+## Renderer usage
+
+Render a Policy Card JSON to a human‑readable Markdown file using the Handlebars template. The renderer first runs the validator; if validation fails, no output is written.
+
+Prerequisites (first time):
+
+```cmd
+cd d:\Projects2\policy-cards
+npm install
+```
+
+Render (Windows cmd):
+
+```cmd
+cd d:\Projects2\policy-cards
+npm run render -- --input examples\payments-gb.json
+```
+
+This writes `examples\payments-gb.md` next to the input by default. You can specify a custom output path:
+
+```cmd
+npm run render -- --input examples\payments-gb.json --output examples\payments-gb.md
+```
+
+Direct invocation (alternative):
+
+```cmd
+node cli\render.js --schema schema\policy-card.schema.json --template docs\templates\policy-card.md.hbs --input examples\payments-gb.json --output examples\payments-gb.md
+```
+
+Options:
+- `--schema` (optional): path to the JSON Schema (defaults to `schema/policy-card.schema.json`).
+- `--template` (optional): path to the Handlebars template (defaults to `docs/templates/policy-card.md.hbs`).
+- `--input` (required): path to the Policy Card JSON file.
+- `--output` (optional): path to the output `.md` file (defaults to input path with `.md`).
+- `--strict-lint` (optional): treat lint warnings as errors (non‑zero exit).
