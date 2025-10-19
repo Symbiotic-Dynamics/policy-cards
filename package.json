@@ -1,9 +1,8 @@
 {
   "name": "policy-cards",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Policy Cards schema, examples, and tooling",
   "license": "Apache-2.0",
-  "private": true,
   "type": "commonjs",
   "scripts": {
     "validate": "node cli/validate.js --schema schema/policy-card.schema.json",

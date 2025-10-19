@@ -5,22 +5,26 @@ authors:
   - family-names: Mavračic
     given-names: Juraj
     affiliation: Symbiotic Dynamics Ltd
+    orcid: https://orcid.org/0000-0001-5457-4550
 repository-code: https://github.com/symbiotic-dynamics/policy-cards
+date-released: 2025-10-19
 license: Apache-2.0
-type: dataset
+type: software
 keywords: [AI governance, policy cards, AI assurance, JSON Schema]
 preferred-citation:
   type: article
-  title: Policy Cards: Deployment-Layer Governance for AI Agents
+  title: Policy Cards: A Machine-Readable, Deployment-Layer Standard for AI Governance.
   authors:
     - family-names: Mavračic
       given-names: Juraj
-  journal: arXiv
+      affiliation: Symbiotic Dynamics Ltd
+      orcid: https://orcid.org/0000-0001-5457-4550
+  journal: Zenodo
   year: 2025
   notes: Preprint
   identifiers:
-    - type: url
-      value: https://arxiv.org/abs/TBA
+    - type: doi
+      value: 10.5281/zenodo.17391796
 identifiers:
   - type: doi
     value: 10.5281/zenodo.TBA  # concept DOI once minted
