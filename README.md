@@ -1,5 +1,7 @@
 # Policy Cards
 
+[![DOI](https://zenodo.org/badge/1076923704.svg)](https://doi.org/10.5281/zenodo.17392819)
+
 **Policy Cards** are a deployment-layer, machine-readable artifact that specifies
 the operational rules, obligations, exceptions, evidence, and assurance mappings
 that a deployed AI system or agent must satisfy in a given context.
@@ -32,7 +34,7 @@ If you use this repository or build upon it, please cite:
 Mavračić, J. (2025). *Policy Cards: A Machine-Readable, Deployment-Layer Standard for AI Governance.* Zenodo. https://doi.org/10.5281/zenodo.17391796
 
 
-For artifacts (schema/examples): Zenodo concept DOI (TBA) and version DOI per release
+For artifacts (schema/examples): https://doi.org/10.5281/zenodo.17392820
 
 
 ## Structure
