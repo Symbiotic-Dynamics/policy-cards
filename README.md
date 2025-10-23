@@ -31,8 +31,7 @@ This repository hosts the **open specification and artifacts**:
 
 If you use this repository or build upon it, please cite:
 
-Mavračić, J. (2025). *Policy Cards: A Machine-Readable, Deployment-Layer Standard for AI Governance.* Zenodo. https://doi.org/10.5281/zenodo.17391796
-
+Mavračić, J. (2025). *Policy Cards: Machine-Readable Runtime Governance for Autonomous AI Agents*  Zenodo. https://doi.org/10.5281/zenodo.17391796
 
 For artifacts (schema/examples): https://doi.org/10.5281/zenodo.17392820
 

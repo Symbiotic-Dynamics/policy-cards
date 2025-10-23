@@ -13,7 +13,7 @@ type: software
 keywords: [AI governance, policy cards, AI assurance, JSON Schema]
 preferred-citation:
   type: article
-  title: "Policy Cards: A Machine-Readable, Deployment-Layer Standard for AI Governance."
+  title: "Policy Cards: Machine-Readable Runtime Governance for Autonomous AI Agents"
   authors:
     - family-names: Mavračic
       given-names: Juraj
