@@ -1,6 +1,6 @@
 # Policy Cards
 
-[![DOI](https://zenodo.org/badge/1076923704.svg)](https://doi.org/10.5281/zenodo.17392819)
+[![DOI](https://zenodo.org/badge/1076923704.svg)](https://doi.org/10.5281/zenodo.17392819) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Symbiotic-Dynamics/policy-cards)
 
 **Policy Cards** are a deployment-layer, machine-readable artifact that specifies
 the operational rules, obligations, exceptions, evidence, and assurance mappings
@@ -16,9 +16,11 @@ This repository hosts the open specification and artifacts:
 
 <p align="center">
   <a href="https://deepwiki.com/Symbiotic-Dynamics/policy-cards" target="_blank">
-    <img src="https://img.shields.io/badge/🔍%20View%20Full%20Wiki-DeepWiki-blue?style=for-the-badge" alt="DeepWiki">
+    <img src="https://img.shields.io/badge/🕮%20View%20Full%20Wiki-grey?style=for-the-badge" alt="DeepWiki">
   </a>
 </p>
+
+
 
 <br>
 
