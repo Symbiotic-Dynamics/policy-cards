@@ -6,11 +6,21 @@
 the operational rules, obligations, exceptions, evidence, and assurance mappings
 that a deployed AI system or agent must satisfy in a given context.
 
-This repository hosts the **open specification and artifacts**:
+This repository hosts the open specification and artifacts:
  - AI Policy Card JSON Schema (2020-12)
  - Examples (multiple domains)
  - Crosswalk to NIST AI RMF / ISO/IEC 42001 / EU AI Act
  - Authoring template and specs notes
+
+<br>
+
+<p align="center">
+  <a href="https://deepwiki.com/Symbiotic-Dynamics/policy-cards" target="_blank">
+    <img src="https://img.shields.io/badge/🔍%20View%20Full%20Wiki-DeepWiki-blue?style=for-the-badge" alt="DeepWiki">
+  </a>
+</p>
+
+<br>
 
 > ⚠️ **Important Legal Notice**  
 > This repository is provided for research and illustrative purposes only.  
@@ -21,7 +31,7 @@ This repository hosts the **open specification and artifacts**:
 > See [DISCLAIMER.md](./DISCLAIMER.md) for full terms.
 
 
-## License matrix
+## Licenses
 - **Code/tooling (if added later):** Apache-2.0 (see `LICENSE`)
 - **JSON Schema (machine-readable):** CC0-1.0 (see `schema/LICENSE-CC0`)
 - **Docs/specs/templates:** CC BY 4.0 (see `docs/LICENSE-CC-BY-4.0`)
